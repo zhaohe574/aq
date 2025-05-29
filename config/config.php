@@ -14,7 +14,7 @@ return [
     ],
     
     'auth' => [
-        'authorized_users' => ['JS05533', 'JS00003'],
+        'authorized_users' => [],
         'token_file' => __DIR__ . '/../storage/cache/tokens.json',
     ],
     

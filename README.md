@@ -116,7 +116,7 @@
    
    ```php
    // 设置授权用户
-   'authorized_users' => ['JS05533', 'JS00003'],
+   'authorized_users' => [],
    
    // 调整API设置
    'api' => [
@@ -138,7 +138,7 @@
    - 默认访问 `index.html` 页面
 
 2. **登录系统**：
-   - 使用授权账号登录（目前支持：JS05533, JS00003）
+   - 使用授权账号登录
    - 输入对应的密码
 
 3. **系统处理流程**：
@@ -228,13 +228,6 @@
 3. 提交更改 (`git commit -m 'Add some amazing feature'`)
 4. 推送到分支 (`git push origin feature/amazing-feature`)
 5. 创建Pull Request
-
-## 联系方式
-
-如有问题或建议，请通过以下方式联系：
-
-- **项目维护者**：[您的名字]
-- **电子邮件**：[您的邮箱]
 
 ## 许可证
 
