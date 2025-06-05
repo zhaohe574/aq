@@ -12,10 +12,17 @@ ini_set('output_buffering', 'off');
 ini_set('implicit_flush', true);
 ob_implicit_flush(true);
 
+// 避免 PHP 会话锁定导致的阻塞
+session_write_close();
+
 // 设置响应头，确保流式输出
 header('Content-Type: text/event-stream');
-header('Cache-Control: no-cache');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 header('X-Accel-Buffering: no');
+// 设置最大执行时间，避免超时
+set_time_limit(0);
 
 /**
  * 系统核心类
@@ -26,7 +33,7 @@ class AutoLearnSystem {
         'api_base_url' => 'http://api.hebeiluhang.com:7000/api',
         'token_file' => 'tokens.json',
         'log_dir' => 'logs',
-        'authorized_users' => []
+        'authorized_users' => ['JS05533','JS02319','JS03912','JS01521','JS00003','JS05764','JS01806']
     ];
     
     // 用户信息
@@ -222,7 +229,7 @@ class AutoLearnSystem {
             }
             
             if (!isset($response['total']) || intval($response['total']) === 0) {
-                $this->formatMessage('课程', '没有可执行的课程任务', 'error');
+                $this->formatMessage('课程', '没有可执行的课程任务', 'success');
                 return;
             }
             
@@ -299,7 +306,7 @@ class AutoLearnSystem {
             $totalExams = $totalUnfinished + $totalFinished;
             
             if ($totalExams === 0) {
-                $this->formatMessage('考试', '没有可执行的考试任务', 'error');
+                $this->formatMessage('考试', '没有可执行的考试任务', 'success');
                 return;
             }
             
@@ -552,13 +559,19 @@ class AutoLearnSystem {
             // JSON编码成功，记录并输出消息
             $this->logMessage($msg, $type);
             echo $msg . "\n";
+            // 在每条消息后添加填充字符，以确保数据传输
+            echo str_pad('', 4096) . "\n";
         }
         
         // 刷新输出缓冲区
         if (ob_get_level() > 0) {
-            ob_flush();
+            @ob_flush();
         }
-        flush();
+        @flush();
+        
+        // 给服务器和浏览器一点时间处理数据
+        // 添加微小延迟，促使浏览器更新界面
+        usleep(10000); // 10ms 延迟
     }
     
     /**

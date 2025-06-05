@@ -8,73 +8,218 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome 图标 -->
     <link rel="stylesheet" href="css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4361ee;
-            --success-color: #4caf50;
-            --error-color: #f44336;
-            --info-color: #2196f3;
-            --warning-color: #ff9800;
-            --bg-color: #f8f9fa;
+            --primary-color: #5E72E4;
+            --primary-color-dark: #324cdd;
+            --secondary-color: #f4f5f7;
+            --success-color: #2dce89;
+            --error-color: #f5365c;
+            --info-color: #11cdef;
+            --warning-color: #fb6340;
+            --bg-color: #f8f9fe;
             --card-bg: #ffffff;
-            --text-color: #333333;
+            --text-color: #32325d;
+            --text-muted: #8898aa;
+            --border-color: #dee2e6;
+            --box-shadow: 0 0 2rem 0 rgba(136, 152, 170, .15);
+            --sci-fi-bg-start: #0d0d2b;
+            --sci-fi-bg-mid: #1a0033;
+            --sci-fi-bg-end: #00264d;
+            --container-glow: 0 0 15px rgba(var(--primary-rgb, 94, 114, 228), 0.4);
+            --primary-rgb: 94, 114, 228;
+            --card-bg-rgb: 255, 255, 255;
+        }
+
+        @keyframes animatedBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes move-stars {
+            0% {transform: translateY(0px);}
+            100% {transform: translateY(-2000px);}
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, var(--sci-fi-bg-start), var(--sci-fi-bg-mid), var(--sci-fi-bg-end));
+            background-size: 400% 400%;
+            animation: animatedBackground 25s ease infinite;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
-            transition: all 0.3s ease;
+            color: var(--text-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 2000px;
+            background-repeat: repeat;
+            animation: move-stars 120s linear infinite;
+            z-index: -1;
+        }
+        body::before {
+            background-image: 
+                radial-gradient(1px 1px at 10px 20px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1.5px 1.5px at 30px 50px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 50px 80px, #ddd, rgba(255,255,255,0)),
+                radial-gradient(2px 2px at 70px 120px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 90px 10px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1.5px 1.5px at 110px 90px, #eee, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 130px 40px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1.5px 1.5px at 150px 110px, #fff, rgba(255,255,255,0)),
+                radial-gradient(2px 2px at 170px 60px, #ddd, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 190px 130px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1.5px 1.5px at 210px 30px, #eee, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 230px 100px, #fff, rgba(255,255,255,0));
+            background-size: 200px 200px;
+            opacity: 0.75;
+        }
+        body::after {
+            background-image: 
+                radial-gradient(1.5px 1.5px at 20px 140px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 60px 180px, #ddd, rgba(255,255,255,0)),
+                radial-gradient(2px 2px at 100px 10px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1.5px 1.5px at 140px 70px, #eee, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 180px 120px, #fff, rgba(255,255,255,0)),
+                radial-gradient(2.5px 2.5px at 220px 190px, #fff, rgba(255,255,255,0));
+            background-size: 280px 280px;
+            animation-duration: 180s;
+            opacity: 0.65;
         }
 
         .app-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 850px;
             height: calc(100vh - 40px);
             display: flex;
             flex-direction: column;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
+            box-shadow: var(--container-glow), 0 0 30px rgba(0,0,0,0.2);
+            border-radius: 15px;
             overflow: hidden;
-            background-color: var(--card-bg);
+            background-color: rgba(var(--card-bg-rgb, 255, 255, 255), 0.9);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(var(--primary-rgb),0.2);
+            z-index: 1;
         }
 
         .app-header {
-            background-color: var(--primary-color);
+            background: linear-gradient(87deg, var(--primary-color) 0, var(--primary-color-dark) 100%) !important;
             color: white;
-            padding: 15px 20px;
+            padding: 20px 25px;
             text-align: center;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .app-title {
             margin: 0;
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .login-container {
-            padding: 20px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 15px 35px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .form-control:focus {
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        .form-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group {
+            transition: box-shadow 0.15s ease-in-out, border-color 0.15s ease-in-out;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .input-group:focus-within {
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(var(--primary-color), 0.25);
+        }
+        
+        .input-group .form-control,
+        .input-group .input-group-text {
+            border: none;
+            box-shadow: none;
+        }
+
+        .input-group .form-control:focus {
+            border-color: transparent;
+            box-shadow: none;
+        }
+
+        .input-group-text {
+            background-color: var(--secondary-color);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group > .input-group-text:not(:last-child) {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .input-group > .form-control:not(:first-child) {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        .input-group > :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu) {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .input-group > :not(:first-child):not(.dropdown-toggle):not(.dropdown-menu) {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .form-control {
+            padding: 0.75rem 1rem;
+            transition: all 0.15s ease-in-out;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            flex-grow: 1;
+            width: auto;
+            min-width: 0;
+        }
+        
+        .form-control:not(.input-group .form-control) {
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+        }
+        .form-control:not(.input-group .form-control):focus {
+             border-color: var(--primary-color);
+             box-shadow: 0 0 0 0.2rem rgba(var(--primary-color), 0.25);
         }
 
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
+            border-radius: 0.375rem;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            transition: all 0.15s ease;
         }
 
         .btn-primary:hover {
-            background-color: #3a56d4;
-            border-color: #3a56d4;
+            background-color: var(--primary-color-dark);
+            border-color: var(--primary-color-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 7px 14px rgba(50, 50, 93, .1), 0 3px 6px rgba(0, 0, 0, .08);
         }
 
         .btn-primary:disabled {
@@ -85,9 +230,9 @@
         .response-container {
             flex: 1;
             overflow-y: auto;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-top: 1px solid #e0e0e0;
+            padding: 15px;
+            background-color: var(--bg-color);
+            border-top: 1px solid var(--border-color);
         }
 
         .response-content {
@@ -96,101 +241,107 @@
 
         /* 自定义滚动条 */
         .response-container::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
 
         .response-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
+            background: var(--secondary-color);
+            border-radius: 5px;
         }
 
         .response-container::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
+            background: #ced4da;
+            border-radius: 5px;
         }
 
         .response-container::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
+            background: #adb5bd;
         }
 
         /* 消息样式 */
         .message {
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            padding: 15px 20px;
+            margin: 12px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, .11), 0 1px 3px rgba(0, 0, 0, .08);
             animation: fadeIn 0.5s ease;
             position: relative;
             overflow: hidden;
+            border-left: 5px solid;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(15px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .message::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 4px;
+            content: none;
         }
 
         .message.error {
-            background-color: #ffebee;
+            background-color: #fff0f1;
+            border-left-color: var(--error-color);
+            color: var(--error-color);
         }
         
-        .message.error::before {
-            background-color: var(--error-color);
+        .message.error .message-title {
+            color: var(--error-color);
         }
 
         .message.success {
-            background-color: #e8f5e9;
+            background-color: #e6fffa;
+            border-left-color: var(--success-color);
+            color: var(--success-color);
         }
 
-        .message.success::before {
-            background-color: var(--success-color);
+        .message.success .message-title {
+            color: var(--success-color);
         }
 
         .message.info {
-            background-color: #e3f2fd;
+            background-color: #e1f5fe;
+            border-left-color: var(--info-color);
+            color: var(--info-color);
         }
         
-        .message.info::before {
-            background-color: var(--info-color);
+        .message.info .message-title {
+            color: var(--info-color);
         }
 
         .message.system {
             background-color: #f3e5f5;
+            border-left-color: #8e24aa;
+            color: #8e24aa;
         }
         
-        .message.system::before {
-            background-color: #9c27b0;
+        .message.system .message-title {
+            color: #8e24aa;
         }
 
         .message-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .message-title {
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: 700;
+            font-size: 1.05rem;
             margin: 0;
+            color: var(--text-color);
         }
 
         .message-time {
-            font-size: 0.75rem;
-            color: #757575;
+            font-size: 0.8rem;
+            color: var(--text-muted);
         }
 
         .message-content {
             white-space: pre-wrap;
-            line-height: 1.5;
+            line-height: 1.6;
+            color: var(--text-color);
         }
 
         /* 加载动画 */
@@ -200,34 +351,44 @@
             margin-right: 0.5rem;
         }
         
-        /* 脉冲等待动画 */
+        /* 新的科技感等待动画 */
         .waiting-animation {
             display: none;
             text-align: center;
             padding: 20px 0;
+            position: relative;
         }
         
         .pulse-dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
+            display: none;
+        }
+
+        /* 替换为扫描线动画 */
+        .scanline-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+        }
+
+        .scanline {
+            width: 60px;
+            height: 2px;
             background-color: var(--primary-color);
-            margin: 0 6px;
-            animation: pulse 1.4s ease-in-out infinite;
+            border-radius: 1px;
+            position: relative;
+            animation: scan 1.5s ease-in-out infinite, pulseColor 1.5s ease-in-out infinite alternate;
+            box-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color);
         }
         
-        .pulse-dot:nth-child(2) {
-            animation-delay: 0.2s;
+        @keyframes scan {
+            0%, 100% { transform: translateX(-30px); opacity: 0.5; }
+            50% { transform: translateX(30px); opacity: 1; }
         }
-        
-        .pulse-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(0.8); opacity: 0.6; }
-            50% { transform: scale(1.2); opacity: 1; }
+
+        @keyframes pulseColor {
+            0%, 100% { background-color: var(--primary-color); box-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color); }
+            50% { background-color: var(--info-color); box-shadow: 0 0 8px var(--info-color), 0 0 15px var(--info-color); }
         }
 
         /* 响应式调整 */
@@ -253,57 +414,177 @@
         /* 深色模式切换 */
         .theme-toggle {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
+            top: 20px;
+            right: 20px;
+            background: rgba(var(--primary-rgb), 0.15);
             border: none;
-            color: white;
-            font-size: 1.2rem;
+            color: #c8d0d8;
+            font-size: 1.25rem;
             cursor: pointer;
             z-index: 1000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(var(--primary-rgb), 0.25);
         }
 
         /* 深色模式样式 */
         body.dark-theme {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
+            --sci-fi-bg-start: #050515;
+            --sci-fi-bg-mid: #0d001a;
+            --sci-fi-bg-end: #001326;
+            --card-bg-rgb: 22, 26, 37;
+            --card-bg: rgba(var(--card-bg-rgb), 0.85);
+            --text-color: #c8d0d8;
+            --text-muted: #7a8aa0;
+            --border-color: #303848;
+            --secondary-color: #1e222b;
+            --primary-rgb: 100, 120, 230;
+            --container-glow: 0 0 25px rgba(var(--primary-rgb), 0.5);
+            color: var(--text-color);
         }
-
+        
+        body.dark-theme .app-container {
+             background-color: var(--card-bg);
+             box-shadow: var(--container-glow), 0 0 35px rgba(0,0,0,0.6);
+             border-color: rgba(var(--primary-rgb),0.3);
+        }
+        body.dark-theme .login-container {
+             border-bottom-color: var(--border-color);
+        }
         body.dark-theme .response-container {
-            background-color: #2d2d2d;
-            border-top: 1px solid #3d3d3d;
-        }
-
-        body.dark-theme .message.error {
-            background-color: #3a0a0a;
-        }
-
-        body.dark-theme .message.success {
-            background-color: #0a380a;
-        }
-
-        body.dark-theme .message.info {
-            background-color: #0a2a3a;
-        }
-
-        body.dark-theme .message.system {
-            background-color: #2a0a38;
-        }
-
-        body.dark-theme .message-time {
-            color: #aaaaaa;
-        }
-
-        body.dark-theme .form-control,
-        body.dark-theme .form-control:focus {
-            background-color: #333;
-            border-color: #444;
-            color: #e0e0e0;
+            background-color: rgba(10,12,20,0.85);
+            border-top-color: var(--border-color);
         }
 
         body.dark-theme .form-label {
-            color: #e0e0e0;
+            color: var(--text-muted);
+        }
+        body.dark-theme .input-group {
+            border-color: var(--border-color); 
+            background-color: rgba(30,35,45,0.7);
+            border-radius: 0.375rem;
+        }
+        body.dark-theme .input-group:focus-within {
+             border-color: var(--primary-color);
+             box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.3);
+        }
+        body.dark-theme .input-group-text {
+            background-color: transparent;
+            color: var(--text-muted);
+            border-color: transparent;
+        }
+        body.dark-theme .form-control {
+            background-color: transparent;
+            color: var(--text-color);
+        }
+        body.dark-theme .input-group .form-control {
+            border: none;
+        }
+        body.dark-theme .form-control::placeholder {
+            color: #6c757d;
+        }
+        body.dark-theme .form-control:not(.input-group .form-control) {
+            background-color: rgba(30,35,45,0.7);
+            border-color: var(--border-color);
+        }
+        body.dark-theme .form-control:not(.input-group .form-control):focus {
+            background-color: transparent;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.3);
+        }
+
+        body.dark-theme .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(var(--primary-rgb),0.3);
+        }
+        body.dark-theme .btn-primary:hover {
+            background-color: var(--primary-color-dark);
+            border-color: var(--primary-color-dark);
+            box-shadow: 0 0 15px rgba(var(--primary-rgb),0.5);
+        }
+        body.dark-theme .btn-primary:disabled {
+            background-color: rgba(var(--primary-rgb), 0.4);
+            border-color: rgba(var(--primary-rgb), 0.4);
+            color: rgba(255,255,255,0.5);
+        }
+
+        body.dark-theme .message {
+            background-color: rgba(var(--card-bg-rgb), 0.7);
+            border-left-width: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        body.dark-theme .message-title {
+             color: var(--text-color);
+        }
+        body.dark-theme .message-time {
+            color: var(--text-muted);
+        }
+
+        body.dark-theme .message.error {
+            background-color: rgba(245, 54, 92, 0.15);
+            border-left-color: var(--error-color);
+            color: var(--error-color);
+        }
+        body.dark-theme .message.error .message-title {
+            color: var(--error-color);
+        }
+
+        body.dark-theme .message.success {
+            background-color: rgba(45, 206, 137, 0.15);
+            border-left-color: var(--success-color);
+            color: var(--success-color);
+        }
+        body.dark-theme .message.success .message-title {
+            color: var(--success-color);
+        }
+
+        body.dark-theme .message.info {
+            background-color: rgba(17, 205, 239, 0.15);
+            border-left-color: var(--info-color);
+            color: var(--info-color);
+        }
+        body.dark-theme .message.info .message-title {
+            color: var(--info-color);
+        }
+
+        body.dark-theme .message.system {
+            background-color: rgba(192, 132, 252, 0.15);
+            border-left-color: #c084fc;
+            color: #c084fc;
+        }
+        body.dark-theme .message.system .message-title {
+            color: #c084fc;
+        }
+
+        body.dark-theme .scanline {
+            background-color: var(--primary-color);
+            box-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color);
+        }
+
+        /* Separate style block for dark-theme specific keyframes if necessary or ensure global keyframes work for both */
+        @keyframes pulseColorDark {
+            0%, 100% { 
+                background-color: var(--primary-color); 
+                box-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color);
+            }
+            50% { 
+                background-color: var(--info-color); 
+                box-shadow: 0 0 8px var(--info-color), 0 0 15px var(--info-color);
+        }
+        }
+        body.dark-theme .scanline {
+            /* Re-apply animation with dark theme specific or correctly scoped keyframes */
+            animation: scan 1.5s ease-in-out infinite, pulseColorDark 1.5s ease-in-out infinite alternate;
         }
     </style>
 </head>
@@ -334,7 +615,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary w-100">
                     <span class="spinner-border spinner-border-sm d-none" id="submitSpinner"></span>
-                    开始执行
+                    <span>开始执行</span>
                 </button>
             </form>
         </div>
@@ -342,9 +623,9 @@
         <div id="messageOutput" class="response-container">
             <div class="response-content"></div>
             <div class="waiting-animation">
-                <div class="pulse-dot"></div>
-                <div class="pulse-dot"></div>
-                <div class="pulse-dot"></div>
+                <div class="scanline-container">
+                    <div class="scanline"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -424,22 +705,40 @@
             
             // 设置响应类型为文本，以便处理流式数据
             xhr.responseType = 'text';
+                
+                // 添加超时处理
+                xhr.timeout = 300000; // 5分钟超时
             
             // 监听数据接收进度
                 xhr.onprogress = (event) => {
                 if (xhr.status === 200) {
-                    // 获取新接收到的数据
+                        // 计算新接收到的数据
                     const newData = xhr.responseText.substring(buffer.length);
+                        if (newData.trim()) {
                     buffer = xhr.responseText;
                     
                     // 收到第一个响应时，隐藏等待动画
-                        if (newData.trim() && this.waitingAnimation) {
+                            if (this.waitingAnimation.style.display === 'block') {
                             this.waitingAnimation.style.display = 'none';
                     }
                     
                         // 处理新接收的数据
                         this.processNewData(newData);
                 }
+                    }
+                };
+                
+                // 处理超时
+                xhr.ontimeout = () => {
+                    console.error('请求超时');
+                    this.setLoadingState(false);
+                    
+                    // 显示超时错误消息
+                    this.showMessage({
+                        type: 'error',
+                        title: '请求超时',
+                        content: '服务器响应时间过长，请稍后再试。'
+                    });
             };
             
             // 处理请求完成事件
@@ -447,6 +746,20 @@
                 if (xhr.status === 200) {
                         // 请求完成，恢复按钮状态
                         this.setLoadingState(false);
+                        
+                        // 检查是否有最后一块数据未处理
+                        const finalData = xhr.responseText.substring(buffer.length);
+                        if (finalData.trim()) {
+                            this.processNewData(finalData);
+                        }
+                    } else {
+                        // 处理非200状态码
+                        this.setLoadingState(false);
+                        this.showMessage({
+                            type: 'error',
+                            title: '服务器错误',
+                            content: `服务器返回错误状态码: ${xhr.status}`
+                        });
                 }
             };
             
@@ -475,25 +788,28 @@
                 // 处理每一行数据
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i].trim();
-                    if (line) {
+                    // 忽略空行和填充字符（服务器可能发送的填充）
+                    if (line && line.indexOf('{') === 0) {
                         try {
                             // 尝试解析JSON
                             const data = JSON.parse(line);
                             // 显示消息
                             this.showMessage(data);
-                            // 显示等待动画
-                            if (this.waitingAnimation) {
-                                this.waitingAnimation.style.display = 'block';
-                            }
                         } catch (e) {
-                            // 如果解析失败，可能是不完整的JSON，忽略
-                            console.log('解析行数据失败，可能是不完整的JSON:', e);
+                            // 如果解析失败，可能是不完整的JSON，记录但不显示
+                            console.log('解析行数据失败，可能是不完整的JSON:', e, line);
                         }
                     }
                 }
                 
-                // 确保新消息完全显示
+                // 等待动画处理
+                if (lines.length > 0 && lines.some(line => line.trim())) {
+                    // 如果有实际内容，显示等待动画表示后续还有数据
+                    this.waitingAnimation.style.display = 'block';
+                    
+                    // 添加一个短暂的延迟，以确保新消息完全显示
                 this.scrollToBottom();
+                }
             },
             
             // 显示单条消息
@@ -529,7 +845,7 @@
                 const contentDiv = messageDiv.querySelector('.message-content');
                 const content = data.content;
                 let charIndex = 0;
-                const typeSpeed = 10; // 打字速度（毫秒/字符）
+                const typeSpeed = 5; // 减少打字速度（毫秒/字符）
 
                 const typeNextChar = () => {
                     if (charIndex < content.length) {
@@ -539,14 +855,12 @@
                         this.scrollToBottom();
                         setTimeout(typeNextChar, typeSpeed);
                     } else {
-                        // 内容显示完毕，隐藏等待动画
-                        if (this.waitingAnimation) {
-                            this.waitingAnimation.style.display = 'none';
-                        }
+                        // 内容显示完毕，但不隐藏等待动画，由processNewData处理
+                        // 如果是最后一条消息，waitingAnimation会在onload中处理
                     }
                 };
 
-                setTimeout(typeNextChar, 300);
+                setTimeout(typeNextChar, 100); // 减少延迟时间
             },
             
             // 滚动到底部
@@ -564,10 +878,12 @@
                 if (isLoading) {
                     this.submitBtn.disabled = true;
                     this.submitSpinner.classList.remove('d-none');
+                    this.submitBtn.querySelector('span:not(.spinner-border-sm)').textContent = '正在执行...';
                     this.waitingAnimation.style.display = 'block';
                 } else {
                     this.submitBtn.disabled = false;
                     this.submitSpinner.classList.add('d-none');
+                    this.submitBtn.querySelector('span:not(.spinner-border-sm)').textContent = '开始执行';
                     this.waitingAnimation.style.display = 'none';
                 }
             },
