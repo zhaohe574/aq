@@ -1,7 +1,37 @@
-# Log files
-logs/
+# Dependencies
+/vendor/
+composer.lock
+/logs/
 
-# Large asset files
+# Environment
+.env
+.env.*
+!.env.example
+
+# Storage
+/storage/logs/*
+/storage/cache/*
+!storage/logs/.gitkeep
+!storage/cache/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+*.log
+php_errors.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Large asset files ignored by this project
 favicon.ico
 css/all.min.css
 css/bootstrap.min.css
