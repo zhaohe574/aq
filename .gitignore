@@ -1,0 +1,12 @@
+# Log files
+logs/
+
+# Large asset files
+favicon.ico
+css/all.min.css
+css/bootstrap.min.css
+js/bootstrap.bundle.min.js
+webfonts/fa-solid-900.woff2
+
+# Token file (if it contains sensitive information and shouldn't be versioned)
+# tokens.json
