@@ -33,7 +33,7 @@ class AutoLearnSystem {
         'api_base_url' => 'http://api.hebeiluhang.com:7000/api',
         'token_file' => 'tokens.json',
         'log_dir' => 'logs',
-        'authorized_users' => ['JS05533','JS02319','JS03912','JS01521','JS00003','JS05764','JS01806']
+        'authorized_users' => ['']
     ];
     
     // 用户信息
@@ -45,6 +45,20 @@ class AutoLearnSystem {
     private $startTime;
     private $completedCourses = 0;
     private $completedExams = 0;
+
+    // 励志语录列表
+    private $motivationalQuotes = [
+        "今天的努力，是明天的基石。坚持不懈，你会看到不一样的风景。",
+        "学习是一场修行，不在乎起点，重要的是坚持的路上，你会遇见更好的自己。",
+        "成功不是偶然，而是日复一日的坚持与积累。每一步都算数。",
+        "知识改变命运，学习成就未来。今天多学一点，明天就多一份力量。",
+        "人生没有白走的路，每一步都是成长。保持学习的心态，你将无所不能。",
+        "再小的进步，只要坚持，也会累积成巨大的成功。",
+        "学习不是为了应付考试，而是为了遇见更广阔的世界和更好的自己。",
+        "没有人能随随便便成功，你的每一次努力都在塑造未来的你。",
+        "不要等待灵感，努力本身就是最好的灵感。",
+        "学习是一辈子的事情，今天你投入的每一分钟，都是给未来的自己铺路。"
+    ];
     
     /**
      * 构造函数，初始化系统
@@ -139,8 +153,71 @@ class AutoLearnSystem {
      */
     private function validateUser() {
         if (!in_array($this->username, $this->config['authorized_users'])) {
-            throw new Exception('未授权的用户');
+            // 记录未授权用户日志
+            $this->logMessage(json_encode([
+                'type' => 'warning',
+                'title' => '未授权访问',
+                'content' => "用户 {$this->username} 尝试访问系统但未授权"
+            ]), 'warning');
+            
+            // 随机选择一条励志语录
+            $randomQuote = $this->motivationalQuotes[array_rand($this->motivationalQuotes)];
+            
+            // 输出消息但不记录日志
+            $this->outputMessage('欢迎', '感谢您使用智慧学习助手', 'info');
+            $this->outputMessage('今日格言', $randomQuote, 'success');
+            $this->outputMessage('温馨提示', '坚持学习，持续进步。我们将一直陪伴您的学习之旅！', 'info');
+
+            $this->logMessage(json_encode([
+                'type' => 'info',
+                'title' => '分割线',
+                'content' => str_repeat('=', 80)
+            ]), 'info');
+            
+            // 直接退出，不显示任务结束信息
+            exit;
         }
+    }
+    
+    /**
+     * 仅输出消息不记录日志
+     */
+    private function outputMessage($title, $content, $type = "info") {
+        // 确保输入参数是有效的字符串
+        $type = is_string($type) ? $type : "info";
+        $title = is_string($title) ? $title : (string)$title;
+        $content = is_string($content) ? $content : (string)$content;
+        
+        // 创建消息数组
+        $messageArray = [
+            'type' => $type,
+            'title' => $title,
+            'content' => $content
+        ];
+        
+        // 尝试JSON编码，并处理可能的错误
+        $msg = json_encode($messageArray, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
+        
+        // 检查JSON编码是否成功
+        if ($msg === false) {
+            // JSON编码失败，创建一个错误消息
+            $errorMsg = json_encode([
+                'type' => 'error',
+                'title' => 'JSON编码错误',
+                'content' => '无法编码消息: ' . json_last_error_msg()
+            ], JSON_UNESCAPED_UNICODE);
+            
+            echo $errorMsg . "\n";
+        } else {
+            // JSON编码成功，只输出消息，不记录日志
+            echo $msg . "\n";
+        }
+        
+        // 刷新输出缓冲区
+        if (ob_get_level() > 0) {
+            ob_flush();
+        }
+        flush();
     }
     
     /**
@@ -172,7 +249,7 @@ class AutoLearnSystem {
                         $this->formatMessage('Token失效', '正在重新登录获取最新Token', 'error');
                     }
                 }
-    } else {
+            } else {
                 // 密码不匹配，删除旧token
                 unset($tokens[$this->username]);
                 $this->saveTokens($tokens);
@@ -216,7 +293,7 @@ class AutoLearnSystem {
         try {
             $url = $this->config['api_base_url'] . '/app/trainCoursePlan/queryAppTCPList';
             $data = [
-                'isFinished' => '0',
+                'isFinished' => '0,1',
                 'appPageNum' => 1,
                 'appPageSize' => 10,
                 'total' => 0
@@ -229,7 +306,7 @@ class AutoLearnSystem {
             }
             
             if (!isset($response['total']) || intval($response['total']) === 0) {
-                $this->formatMessage('课程', '没有可执行的课程任务', 'success');
+                $this->formatMessage('课程', '课程任务已全部完成', 'success');
                 return;
             }
             
@@ -242,16 +319,28 @@ class AutoLearnSystem {
                         continue;
                     }
                     
-                    if ($course['courseTrainTypeCode'] != '1') {
-                        $this->formatMessage('课程', '非视频类课程正在开发中...', 'error');
-                        continue;
+                    $courseName = $course['courseName'];
+                    
+                    if ($course['courseTrainTypeCode'] == '0') {
+                        $this->formatMessage('课程', '开始执行文件课程任务：'. $courseName, 'info');
+                        
+                        // 执行课程任务
+                        $result = $this->completeCourseWJ($course);
                     }
                     
-                    $courseName = $course['courseName'];
-                    $this->formatMessage('课程', '开始执行课程任务：'. $courseName, 'info');
+                    if ($course['courseTrainTypeCode'] == '1') {
+                        $this->formatMessage('课程', '开始执行视频课程任务：'. $courseName, 'info');
+                        
+                        // 执行课程任务
+                        $result = $this->completeCourseSP($course);
+                    }
                     
-                    // 执行课程任务
-                    $result = $this->completeCourse($course);
+                    if ($course['courseTrainTypeCode'] == '2') {
+                        $this->formatMessage('课程', '开始执行视频和文件课程任务：'. $courseName, 'info');
+                        
+                        // 执行课程任务
+                        $result = $this->completeCourseSPWJ($course);
+                    }
                     
                     if ($result) {
                         $this->completedCourses++;
@@ -265,9 +354,31 @@ class AutoLearnSystem {
     }
     
     /**
-     * 完成单个课程
+     * 完成单个文件课程
      */
-    private function completeCourse($course) {
+    private function completeCourseWJ($course) {
+        $url = $this->config['api_base_url'] . '/app/trainCoursePlan/updateTCP';
+        $data = $course;
+        $data['isFinished'] = '1';
+        $data['haveViewTime'] = $course['viewTime'];
+        $data['status'] = '1';
+        $data['params'] = count($course['params']) == 0 ? (object)[] : $course['params'];
+        
+        $response = $this->sendRequest($url, 'POST', $data);
+        
+        if (isset($response['code']) && $response['code'] === 500) {
+            $this->formatMessage($course['courseName'], '课程学习失败: ' . ($response['msg'] ?? '未知错误'), 'error');
+            return false;
+        }
+        
+        // $this->formatMessage($course['courseName'], '课程任务学习完成', 'success');
+        return true;
+    }
+    
+    /**
+     * 完成单个视频课程
+     */
+    private function completeCourseSP($course) {
         $url = $this->config['api_base_url'] . '/app/trainCoursePlan/updateTCP';
         $data = $course;
         $data['isFinished'] = '1';
@@ -283,7 +394,31 @@ class AutoLearnSystem {
             return false;
         }
         
-        $this->formatMessage($course['courseName'], '课程任务学习完成', 'success');
+        // $this->formatMessage($course['courseName'], '课程任务学习完成', 'success');
+        return true;
+    }
+    
+    /**
+     * 完成视频文件课程
+     */
+    private function completeCourseSPWJ($course) {
+        $url = $this->config['api_base_url'] . '/app/trainCoursePlan/updateTCP';
+        $data = $course;
+        $data['isFinished'] = '1';
+        $data['haveVideoTime'] = $course['videoTime'];
+        $data['status'] = '1';
+        $data['pauseVideoTime'] = $course['videoTime'];
+        $data['haveViewTime'] = $course['viewTime'];
+        $data['params'] = count($course['params']) == 0 ? (object)[] : $course['params'];
+        
+        $response = $this->sendRequest($url, 'POST', $data);
+        
+        if (isset($response['code']) && $response['code'] === 500) {
+            $this->formatMessage($course['courseName'], '课程学习失败: ' . ($response['msg'] ?? '未知错误'), 'error');
+            return false;
+        }
+        
+        // $this->formatMessage($course['courseName'], '课程任务学习完成', 'success');
         return true;
     }
     
@@ -306,7 +441,7 @@ class AutoLearnSystem {
             $totalExams = $totalUnfinished + $totalFinished;
             
             if ($totalExams === 0) {
-                $this->formatMessage('考试', '没有可执行的考试任务', 'success');
+                $this->formatMessage('考试', '考试任务已全部完成', 'success');
                 return;
             }
             
@@ -333,7 +468,7 @@ class AutoLearnSystem {
         $url = $this->config['api_base_url'] . '/app/trainExamPlan/queryExamPlans';
         $data = [
             'isFinished' => $isFinished,
-            'isMy' => '1',
+            'isMy' => '0',
             'appPageNum' => 1,
             'appPageSize' => 10,
             'total' => 0
@@ -598,8 +733,20 @@ class AutoLearnSystem {
     $action = isset($decoded['title']) ? $decoded['title'] : '未知操作';
     $content = isset($decoded['content']) ? $decoded['content'] : $message;
     
-    // 格式化日志内容
-    $logEntry = "[{$date} {$time}] [{$logType}] [用户:{$user}] [IP:{$ip}] [操作:{$action}] {$content}";
+    // 格式化日志内容 - 对齐
+    $userPadded = str_pad($user, 7, ' '); // 类型限制在8个字符内
+    $logTypePadded = str_pad($logType, 7, ' '); // 类型限制在8个字符内
+    $ipPadded = str_pad($ip, 12, ' '); // IP地址通常不会超过15个字符
+    
+    // 为处理中文字符对齐，计算实际宽度并补齐空格
+    $actionPadded = $action;
+    $targetWidth = 10; // 目标显示宽度
+    $currentWidth = mb_strwidth($action, 'UTF-8');
+    if ($currentWidth < $targetWidth) {
+        $actionPadded .= str_repeat(' ', $targetWidth - $currentWidth);
+    }
+
+    $logEntry = "[{$date} {$time}] [{$logTypePadded}] [用户:{$userPadded}] [IP:{$ipPadded}] [操作:{$actionPadded}] {$content}";
     
     // 写入日志文件
         $logFile = "{$this->config['log_dir']}/log_{$date}.txt";
@@ -646,18 +793,18 @@ class AutoLearnSystem {
      * 开始日志会话
      */
     private function startLogSession() {
-// 添加开始分割线
+        // 添加开始分割线
         $this->logMessage(json_encode([
-    'type' => 'info',
-    'title' => '分割线',
-    'content' => str_repeat('=', 50)
-]), 'info');
+            'type' => 'info',
+            'title' => '分割线',
+            'content' => str_repeat('=', 80)
+        ]), 'info');
         
         $this->logMessage(json_encode([
-    'type' => 'info',
-    'title' => '开始',
-    'content' => '开始执行任务 - ' . date('Y-m-d H:i:s')
-]), 'info');
+            'type' => 'info',
+            'title' => '开始',
+            'content' => '开始执行任务 - ' . date('Y-m-d H:i:s')
+        ]), 'info');
     }
     
     /**
@@ -672,10 +819,10 @@ class AutoLearnSystem {
         $this->formatMessage('任务结束', "执行时长：{$executionTime}秒，完成课程：{$this->completedCourses}个，完成考试：{$this->completedExams}个", 'info');
         
         $this->logMessage(json_encode([
-    'type' => 'info',
-    'title' => '分割线',
-    'content' => str_repeat('=', 50)
-]), 'info');
+            'type' => 'info',
+            'title' => '分割线',
+            'content' => str_repeat('=', 80)
+        ]), 'info');
     }
 }
 
