@@ -1,0 +1,28 @@
+# 敏感信息文件
+tokens.json
+
+# 日志文件
+logs/
+errs/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE配置
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# 临时文件
+*.tmp
+*.log
+*.bak
+
+# 备份文件
+*.backup
+

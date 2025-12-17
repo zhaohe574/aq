@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日志查看器 - 智慧学习助手</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5E72E4;
+            --primary-color-dark: #324cdd;
+            --secondary-color: #f4f5f7;
+            --success-color: #2dce89;
+            --error-color: #f5365c;
+            --info-color: #11cdef;
+            --warning-color: #fb6340;
+            --bg-color: #f8f9fe;
+            --card-bg: #ffffff;
+            --text-color: #32325d;
+            --text-muted: #8898aa;
+            --border-color: #dee2e6;
+            --box-shadow: 0 0 2rem 0 rgba(136, 152, 170, .15);
+            --sci-fi-bg-start: #0d0d2b;
+            --sci-fi-bg-mid: #1a0033;
+            --sci-fi-bg-end: #00264d;
+            --container-glow: 0 0 15px rgba(var(--primary-rgb, 94, 114, 228), 0.4);
+            --primary-rgb: 94, 114, 228;
+            --card-bg-rgb: 255, 255, 255;
+        }
+
+        @keyframes animatedBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes move-stars {
+            0% {transform: translateY(0px);}
+            100% {transform: translateY(-2000px);}
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, var(--sci-fi-bg-start), var(--sci-fi-bg-mid), var(--sci-fi-bg-end));
+            background-size: 400% 400%;
+            animation: animatedBackground 25s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 2000px;
+            background-repeat: repeat;
+            animation: move-stars 120s linear infinite;
+            z-index: -1;
+        }
+        body::before {
+            background-image: 
+                radial-gradient(1px 1px at 10px 20px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1.5px 1.5px at 30px 50px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 50px 80px, #ddd, rgba(255,255,255,0)),
+                radial-gradient(2px 2px at 70px 120px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 90px 10px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1.5px 1.5px at 110px 90px, #eee, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 130px 40px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1.5px 1.5px at 150px 110px, #fff, rgba(255,255,255,0)),
+                radial-gradient(2px 2px at 170px 60px, #ddd, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 190px 130px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1.5px 1.5px at 210px 30px, #eee, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 230px 100px, #fff, rgba(255,255,255,0));
+            background-size: 200px 200px;
+            opacity: 0.75;
+        }
+        body::after {
+            background-image: 
+                radial-gradient(1.5px 1.5px at 20px 140px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 60px 180px, #ddd, rgba(255,255,255,0)),
+                radial-gradient(2px 2px at 100px 10px, #fff, rgba(255,255,255,0)),
+                radial-gradient(1.5px 1.5px at 140px 70px, #eee, rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 180px 120px, #fff, rgba(255,255,255,0)),
+                radial-gradient(2.5px 2.5px at 220px 190px, #fff, rgba(255,255,255,0));
+            background-size: 280px 280px;
+            animation-duration: 180s;
+            opacity: 0.65;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1200px;
+            height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--container-glow), 0 0 30px rgba(0,0,0,0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            background-color: rgba(var(--card-bg-rgb, 255, 255, 255), 0.9);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(var(--primary-rgb),0.2);
+            z-index: 1;
+        }
+
+        .app-header {
+            background: linear-gradient(87deg, var(--primary-color) 0, var(--primary-color-dark) 100%) !important;
+            color: white;
+            padding: 20px 25px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .file-list-container {
+            width: 250px;
+            background-color: var(--secondary-color);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .file-list-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+        }
+
+        .file-type-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .file-type-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .file-type-tab.active {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .file-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-item:hover {
+            background-color: rgba(var(--primary-rgb), 0.1);
+        }
+
+        .file-item.active {
+            background-color: rgba(var(--primary-rgb), 0.2);
+            font-weight: 600;
+        }
+
+        .log-content-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .log-controls {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+        }
+
+        .log-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: var(--bg-color);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        /* 日志级别样式 */
+        .log-level {
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+
+        .log-level.info {
+            color: var(--info-color);
+            background-color: rgba(var(--info-color), 0.1);
+        }
+
+        .log-level.error {
+            color: var(--error-color);
+            background-color: rgba(var(--error-color), 0.1);
+        }
+
+        .log-level.warning {
+            color: var(--warning-color);
+            background-color: rgba(var(--warning-color), 0.1);
+        }
+
+        .log-level.success {
+            color: var(--success-color);
+            background-color: rgba(var(--success-color), 0.1);
+        }
+
+        /* 日志元素样式 */
+        .log-time {
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+        }
+
+        .log-user {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .log-ip {
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+        }
+
+        .log-action {
+            color: var(--success-color);
+            font-weight: 500;
+        }
+
+        .log-message {
+            color: var(--text-color);
+            margin-left: 8px;
+        }
+
+        /* 搜索结果高亮 */
+        .highlight {
+            background-color: #ffeb3b;
+            padding: 2px 0;
+        }
+
+        /* 自定义滚动条 */
+        .file-list::-webkit-scrollbar,
+        .log-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .file-list::-webkit-scrollbar-track,
+        .log-content::-webkit-scrollbar-track {
+            background: var(--secondary-color);
+            border-radius: 4px;
+        }
+
+        .file-list::-webkit-scrollbar-thumb,
+        .log-content::-webkit-scrollbar-thumb {
+            background: #ced4da;
+            border-radius: 4px;
+        }
+
+        .file-list::-webkit-scrollbar-thumb:hover,
+        .log-content::-webkit-scrollbar-thumb:hover {
+            background: #adb5bd;
+        }
+
+        /* 加载动画 */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .loading-spinner {
+            color: white;
+        }
+
+        /* 深色模式切换 */
+        .theme-toggle {
+            background: rgba(var(--primary-rgb), 0.15);
+            border: none;
+            color: #c8d0d8;
+            font-size: 1.25rem;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(var(--primary-rgb), 0.25);
+        }
+
+        /* 返回主页按钮 */
+        .back-button {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* 深色模式样式 */
+        body.dark-theme {
+            --sci-fi-bg-start: #050515;
+            --sci-fi-bg-mid: #0d001a;
+            --sci-fi-bg-end: #001326;
+            --card-bg-rgb: 22, 26, 37;
+            --card-bg: rgba(var(--card-bg-rgb), 0.85);
+            --text-color: #c8d0d8;
+            --text-muted: #7a8aa0;
+            --border-color: #303848;
+            --secondary-color: #1e222b;
+            --primary-rgb: 100, 120, 230;
+            --container-glow: 0 0 25px rgba(var(--primary-rgb), 0.5);
+            color: var(--text-color);
+        }
+        
+        body.dark-theme .app-container {
+             background-color: var(--card-bg);
+             box-shadow: var(--container-glow), 0 0 35px rgba(0,0,0,0.6);
+             border-color: rgba(var(--primary-rgb),0.3);
+        }
+
+        body.dark-theme .file-list-container {
+            background-color: var(--secondary-color);
+            border-right-color: var(--border-color);
+        }
+
+        body.dark-theme .file-list-header {
+            background-color: var(--card-bg);
+            border-bottom-color: var(--border-color);
+        }
+
+        body.dark-theme .file-type-tabs {
+            border-bottom-color: var(--border-color);
+        }
+
+        body.dark-theme .file-item.active {
+            background-color: rgba(var(--primary-rgb), 0.3);
+        }
+
+        body.dark-theme .log-controls {
+            background-color: var(--card-bg);
+            border-bottom-color: var(--border-color);
+        }
+
+        body.dark-theme .log-content {
+            background-color: rgba(10,12,20,0.85);
+            color: var(--text-color);
+        }
+
+        body.dark-theme .log-entry {
+            border-bottom-color: rgba(255,255,255,0.05);
+        }
+
+        body.dark-theme .highlight {
+            background-color: rgba(255, 235, 59, 0.5);
+            color: #000;
+        }
+
+        /* 深色模式下的日志元素样式 */
+        body.dark-theme .log-time {
+            color: var(--text-muted);
+        }
+
+        body.dark-theme .log-user {
+            color: var(--primary-color);
+        }
+
+        body.dark-theme .log-ip {
+            color: var(--text-muted);
+        }
+
+        body.dark-theme .log-action {
+            color: var(--success-color);
+        }
+
+        body.dark-theme .log-message {
+            color: var(--text-color);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .app-container {
+                height: calc(100vh - 20px);
+                border-radius: 8px;
+            }
+            
+            .app-header {
+                padding: 15px;
+            }
+            
+            .app-title {
+                font-size: 1.3rem;
+            }
+            
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .file-list-container {
+                width: 100%;
+                height: 200px;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .log-controls {
+                padding: 10px;
+            }
+            
+            .log-content {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <div class="header-actions">
+                <button class="back-button" id="backButton">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>返回主页</span>
+                </button>
+            </div>
+            <h1 class="app-title">日志查看器</h1>
+            <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+        
+        <div class="main-content">
+            <div class="file-list-container">
+                <div class="file-type-tabs">
+                    <div class="file-type-tab active" data-type="log">操作日志</div>
+                    <div class="file-type-tab" data-type="error">错误日志</div>
+                </div>
+                <div class="file-list-header">
+                    <input type="text" id="fileSearch" class="form-control" placeholder="搜索日志文件...">
+                </div>
+                <div class="file-list" id="fileList">
+                    <!-- 日志文件列表将通过JavaScript动态生成 -->
+                </div>
+            </div>
+            
+            <div class="log-content-container">
+                <div class="log-controls">
+                    <div class="input-group">
+                        <input type="text" id="logSearch" class="form-control" placeholder="搜索日志内容...">
+                        <button class="btn btn-primary" id="searchButton">
+                            <i class="fas fa-search"></i>
+                            搜索
+                        </button>
+                        <button class="btn btn-secondary" id="clearSearchButton">
+                            <i class="fas fa-times"></i>
+                            清除
+                        </button>
+                    </div>
+                </div>
+                <div class="log-content" id="logContent">
+                    <p class="text-center text-muted" style="margin-top: 50px;">
+                        请从左侧选择要查看的日志文件
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">加载中...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // 主应用模块
+        const LogViewer = {
+            // 初始化应用
+            init() {
+                this.cacheElements();
+                this.bindEvents();
+                this.loadSavedTheme();
+                this.loadLogFiles('log');
+            },
+            
+            // 缓存DOM元素
+            cacheElements() {
+                this.themeToggle = document.getElementById('themeToggle');
+                this.backButton = document.getElementById('backButton');
+                this.fileTypeTabs = document.querySelectorAll('.file-type-tab');
+                this.fileListElement = document.getElementById('fileList'); // 修改为更明确的变量名
+                this.fileSearch = document.getElementById('fileSearch');
+                this.logContent = document.getElementById('logContent');
+                this.logSearch = document.getElementById('logSearch');
+                this.searchButton = document.getElementById('searchButton');
+                this.clearSearchButton = document.getElementById('clearSearchButton');
+                this.loadingOverlay = document.getElementById('loadingOverlay');
+                this.currentFileType = 'log';
+                this.currentFile = null;
+                this.fileArray = []; // 添加新变量存储文件数组
+            },
+
+            // 绑定事件
+            bindEvents() {
+                this.themeToggle.addEventListener('click', this.toggleTheme.bind(this));
+                this.backButton.addEventListener('click', this.goBackToHome.bind(this));
+                
+                // 文件类型切换
+                this.fileTypeTabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const type = tab.dataset.type;
+                        this.switchFileType(type);
+                    });
+                });
+                
+                // 文件搜索
+                this.fileSearch.addEventListener('input', this.filterFiles.bind(this));
+                
+                // 日志内容搜索
+                this.searchButton.addEventListener('click', this.searchLogContent.bind(this));
+                this.clearSearchButton.addEventListener('click', this.clearSearch.bind(this));
+                this.logSearch.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.searchLogContent();
+                    }
+                });
+            },
+
+            // 切换文件类型
+            switchFileType(type) {
+                // 更新活动标签
+                this.fileTypeTabs.forEach(tab => {
+                    if (tab.dataset.type === type) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+                
+                // 加载对应类型的文件
+                this.currentFileType = type;
+                this.loadLogFiles(type);
+                
+                // 清空当前内容
+                this.logContent.innerHTML = '<p class="text-center text-muted" style="margin-top: 50px;">请从左侧选择要查看的日志文件</p>';
+                this.currentFile = null;
+            },
+
+            // 加载日志文件列表
+            loadLogFiles: function(fileType) {
+                this.showLoading(true);
+                this.currentFileType = fileType;
+                
+                // 使用PHP脚本获取真实文件列表
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', `get_file_list.php?type=${fileType}`, true);
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState === 4) {
+                        this.showLoading(false);
+                        if (xhr.status === 200) {
+                            try {
+                                // 检查响应是否为空
+                                if (!xhr.responseText || xhr.responseText.trim() === '') {
+                                    console.warn('服务器返回了空响应');
+                                    this.fileArray = [];
+                                    this.renderFileList(this.fileArray);
+                                    return;
+                                }
+                                
+                                const response = JSON.parse(xhr.responseText);
+                                console.log('获取到的文件列表:', response);
+                                if (response.success && response.files && response.files.length > 0) {
+                                    this.fileArray = response.files; // 使用新变量存储文件数组
+                                    this.renderFileList(this.fileArray); // 传递文件数组给renderFileList
+                                    
+                                    // 如果有文件，自动选择第一个
+                                    if (this.fileArray.length > 0) {
+                                        this.loadLogFile(this.fileArray[0]);
+                                    }
+                                } else {
+                                    console.warn('服务器返回的文件列表为空');
+                                    this.fileArray = [];
+                                    this.renderFileList(this.fileArray);
+                                }
+                            } catch (e) {
+                                console.error('解析文件列表失败:', e, '原始响应:', xhr.responseText);
+                                this.fileArray = [];
+                                this.renderFileList(this.fileArray);
+                            }
+                        } else {
+                            console.error('获取文件列表失败，HTTP状态码:', xhr.status);
+                            this.fileArray = [];
+                            this.renderFileList(this.fileArray);
+                        }
+                    }
+                };
+                xhr.onerror = (error) => {
+                    console.error('请求文件列表时发生网络错误:', error);
+                    this.showLoading(false);
+                    this.fileArray = [];
+                    this.renderFileList(this.fileArray);
+                };
+                xhr.send();
+            },
+
+            // 渲染文件列表
+            renderFileList(files) {
+                this.fileListElement.innerHTML = ''; // 使用正确的DOM元素引用
+                
+                if (!files || files.length === 0) {
+                    const emptyMessage = document.createElement('div');
+                    emptyMessage.className = 'text-center text-muted';
+                    emptyMessage.style.padding = '20px';
+                    emptyMessage.textContent = '没有找到日志文件';
+                    this.fileListElement.appendChild(emptyMessage);
+                    return;
+                }
+                
+                files.forEach(file => {
+                    const fileName = file.split('/').pop();
+                    const fileItem = document.createElement('div');
+                    fileItem.className = `file-item ${this.currentFile === file ? 'active' : ''}`;
+                    fileItem.dataset.file = file;
+                    
+                    // 确定文件图标
+                    let fileIcon = 'fa-file-alt';
+                    if (fileName.includes('error')) {
+                        fileIcon = 'fa-file-exclamation';
+                    }
+                    
+                    fileItem.innerHTML = `
+                        <i class="fas ${fileIcon}"></i>
+                        <span class="file-name">${fileName}</span>
+                    `;
+                    
+                    // 添加点击事件
+                    fileItem.addEventListener('click', () => {
+                        // 移除其他文件的活动状态
+                        document.querySelectorAll('.file-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        
+                        // 添加当前文件的活动状态
+                        fileItem.classList.add('active');
+                        
+                        // 加载文件内容
+                        this.currentFile = file;
+                        this.loadLogFile(file);
+                    });
+                    
+                    this.fileListElement.appendChild(fileItem);
+                });
+            },
+
+            // 过滤文件列表
+            filterFiles() {
+                const searchTerm = this.fileSearch.value.toLowerCase();
+                const filteredFiles = this.fileArray.filter(file => {
+                    const fileName = file.split('/').pop().toLowerCase();
+                    return fileName.includes(searchTerm);
+                });
+                this.renderFileList(filteredFiles);
+            },
+            
+            // 加载日志文件内容
+            loadLogFile(file) {
+                if (!file) return;
+                
+                this.currentFile = file;
+                
+                // 更新UI
+                const fileItems = this.fileListElement.querySelectorAll('.file-item'); // 修改为正确的DOM元素引用
+                fileItems.forEach(item => {
+                    if (item.dataset.file === file) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+                
+                // 显示加载状态
+                this.showLoading(true);
+                
+                // 创建XMLHttpRequest对象
+                const xhr = new XMLHttpRequest();
+                
+                // 使用代理脚本加载日志文件内容
+                xhr.open('GET', 'get_log_content.php?file=' + encodeURIComponent(file), true);
+                xhr.responseType = 'text'; // 确保以文本形式获取响应
+                
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState === 4) {
+                        let content = '';
+                        
+                        if (xhr.status === 200) {
+                            // 请求成功，使用实际的文件内容
+                            content = xhr.responseText;
+                            console.log(`成功加载文件: ${file}`);
+                        } else {
+                            // 请求失败，显示错误信息
+                            console.error(`加载文件失败: ${file}, 状态码: ${xhr.status}`);
+                            content = `[错误] 无法加载文件: ${file}\nHTTP状态码: ${xhr.status}`;
+                        }
+                        
+                        // 渲染日志内容
+                        this.renderLogContent(content);
+                        
+                        // 隐藏加载状态
+                        this.showLoading(false);
+                    }
+                };
+                
+                // 处理网络错误
+                xhr.onerror = () => {
+                    this.logContent.innerHTML = `[错误] 网络错误，无法加载文件: ${file}`;
+                    this.showLoading(false);
+                };
+                
+                xhr.send();
+            },
+            
+            // 渲染日志内容
+            renderLogContent(content) {
+                this.logContent.innerHTML = '';
+                
+                if (!content || content.trim() === '') {
+                    const emptyMessage = document.createElement('p');
+                    emptyMessage.className = 'text-center text-muted';
+                    emptyMessage.textContent = '日志文件为空';
+                    this.logContent.appendChild(emptyMessage);
+                    return;
+                }
+                
+                // 按行分割日志内容
+                const lines = content.split('\n');
+                
+                lines.forEach(line => {
+                    if (line.trim() === '') return;
+                    
+                    const logEntry = document.createElement('div');
+                    logEntry.className = 'log-entry';
+                    
+                    // 解析日志行，提取日志级别
+                    let formattedLine = line;
+                    
+                    // 处理不同格式的日志条目
+                    // 匹配标准日志格式 [日期 时间] [级别] [用户:xxx] [IP:xxx] [操作:xxx] 内容
+                    const standardMatch = line.match(/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\] \[(\w+)\s*\] \[用户:(\w+)\] \[IP:(\S+)\] \[操作:(\S+)\] (.*)/);
+                    
+                    if (standardMatch) {
+                        const [, timestamp, level, user, ip, action, message] = standardMatch;
+                        
+                        // 格式化日志级别
+                        const levelClass = level.toLowerCase().replace(/\s+/g, '');
+                        const validLevels = ['info', 'success', 'error', 'warning'];
+                        const displayLevel = validLevels.includes(levelClass) ? levelClass : 'info';
+                        
+                        // 创建格式化的日志条目
+                        logEntry.innerHTML = `
+                            <span class="log-time">${timestamp}</span> 
+                            <span class="log-level ${displayLevel}">${level}</span> 
+                            <span class="log-user">[用户:${user}]</span> 
+                            <span class="log-ip">[IP:${ip}]</span> 
+                            <span class="log-action">[操作:${action}]</span> 
+                            <span class="log-message">${message}</span>
+                        `;
+                    } else {
+                        // 对于非标准格式的日志行，直接显示
+                        logEntry.textContent = line;
+                    }
+                    
+                    this.logContent.appendChild(logEntry);
+                });
+            },
+            
+            // 搜索日志内容
+            searchLogContent() {
+                const searchTerm = this.logSearch.value.toLowerCase();
+                if (!searchTerm) {
+                    // 清除所有高亮
+                    this.clearHighlights();
+                    return;
+                }
+                
+                const logEntries = this.logContent.querySelectorAll('.log-entry');
+                let found = false;
+                let firstMatch = null;
+                
+                // 清除所有高亮
+                this.clearHighlights();
+                
+                logEntries.forEach(entry => {
+                    const text = entry.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        found = true;
+                        // 高亮搜索结果
+                        const highlightedText = entry.innerHTML.replace(
+                            new RegExp(`(${searchTerm})`, 'gi'),
+                            '<span class="highlight">$1</span>'
+                        );
+                        entry.innerHTML = highlightedText;
+                        
+                        // 记录第一个匹配项，但不立即滚动
+                        if (!firstMatch) {
+                            firstMatch = entry;
+                            entry.classList.add('highlight');
+                        }
+                    }
+                });
+                
+                // 添加一个滚动到结果的按钮
+                if (found && firstMatch) {
+                    // 检查是否已存在滚动按钮
+                    let scrollButton = document.getElementById('scrollToResultButton');
+                    if (!scrollButton) {
+                        scrollButton = document.createElement('button');
+                        scrollButton.id = 'scrollToResultButton';
+                        scrollButton.className = 'btn btn-info mt-2';
+                        scrollButton.innerHTML = '<i class="fas fa-arrow-down"></i> 滚动到结果';
+                        scrollButton.style.position = 'fixed';
+                        scrollButton.style.right = '20px';
+                        scrollButton.style.bottom = '20px';
+                        scrollButton.style.zIndex = '1000';
+                        document.body.appendChild(scrollButton);
+                    } else {
+                        scrollButton.style.display = 'block';
+                    }
+                    
+                    scrollButton.onclick = () => {
+                        firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    };
+                } else {
+                    // 如果没有找到结果，隐藏滚动按钮
+                    const scrollButton = document.getElementById('scrollToResultButton');
+                    if (scrollButton) {
+                        scrollButton.style.display = 'none';
+                    }
+                }
+                
+                if (!found) {
+                    // 显示未找到结果的提示
+                    const noResult = document.createElement('div');
+                    noResult.className = 'text-center text-muted mt-3';
+                    noResult.textContent = '未找到匹配的内容';
+                    this.logContent.appendChild(noResult);
+                }
+            },
+            
+            // 清除高亮
+            clearHighlights() {
+                const logEntries = this.logContent.querySelectorAll('.log-entry');
+                logEntries.forEach(entry => {
+                    entry.classList.remove('highlight');
+                    entry.innerHTML = entry.innerHTML.replace(/<span class="highlight">([^<]*)<\/span>/g, '$1');
+                });
+                
+                // 隐藏滚动按钮
+                const scrollButton = document.getElementById('scrollToResultButton');
+                if (scrollButton) {
+                    scrollButton.style.display = 'none';
+                }
+            },
+            
+            // 清除搜索
+            clearSearch() {
+                this.logSearch.value = '';
+                // 使用清除高亮方法
+                this.clearHighlights();
+            },
+            
+            // 切换深色/浅色主题
+            toggleTheme() {
+                document.body.classList.toggle('dark-theme');
+                const isDarkMode = document.body.classList.contains('dark-theme');
+                
+                // 更新图标
+                this.themeToggle.innerHTML = isDarkMode ? 
+                    '<i class="fas fa-sun"></i>' : 
+                    '<i class="fas fa-moon"></i>';
+                
+                // 保存主题设置到本地存储
+                localStorage.setItem('darkTheme', isDarkMode);
+            },
+            
+            // 加载保存的主题
+            loadSavedTheme() {
+                const savedTheme = localStorage.getItem('darkTheme');
+                if (savedTheme === 'true') {
+                    document.body.classList.add('dark-theme');
+                    this.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                }
+            },
+            
+            // 返回主页
+            goBackToHome() {
+                window.location.href = 'index.html';
+            },
+            
+            // 显示/隐藏加载状态
+            showLoading(show) {
+                this.loadingOverlay.style.display = show ? 'flex' : 'none';
+            }
+        };
+
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', () => {
+            LogViewer.init();
+        });
+    </script>
+</body>
+</html>
