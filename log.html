@@ -55,17 +55,20 @@
             padding: 20px;
             color: var(--text-color);
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         body::before, body::after {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0; left: 0;
-            width: 100%; height: 2000px;
+            width: 100%; 
+            height: 100vh;
             background-repeat: repeat;
             animation: move-stars 120s linear infinite;
             z-index: -1;
+            pointer-events: none;
         }
         body::before {
             background-image: 
@@ -106,10 +109,11 @@
             box-shadow: var(--container-glow), 0 0 30px rgba(0,0,0,0.2);
             border-radius: 15px;
             overflow: hidden;
-            background-color: rgba(var(--card-bg-rgb, 255, 255, 255), 0.9);
-            transition: all 0.3s ease;
+            background-color: rgba(var(--card-bg-rgb, 255, 255, 255), 0.95);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid rgba(var(--primary-rgb),0.2);
             z-index: 1;
+            backdrop-filter: blur(10px);
         }
 
         .app-header {
@@ -183,23 +187,27 @@
         }
 
         .file-item {
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            background-color: var(--card-bg);
         }
 
         .file-item:hover {
-            background-color: rgba(var(--primary-rgb), 0.1);
+            background-color: rgba(var(--primary-rgb), 0.15);
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.1);
         }
 
         .file-item.active {
-            background-color: rgba(var(--primary-rgb), 0.2);
+            background-color: rgba(var(--primary-rgb), 0.25);
             font-weight: 600;
+            border-left: 3px solid var(--primary-color);
         }
 
         .log-content-container {
@@ -363,16 +371,23 @@
             border: 1px solid rgba(255,255,255,0.3);
             color: white;
             padding: 8px 15px;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 5px;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
         }
 
         .back-button:hover {
             background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .back-button:active {
+            transform: translateY(0);
         }
 
         /* 深色模式样式 */
@@ -395,6 +410,19 @@
              background-color: var(--card-bg);
              box-shadow: var(--container-glow), 0 0 35px rgba(0,0,0,0.6);
              border-color: rgba(var(--primary-rgb),0.3);
+             backdrop-filter: blur(15px);
+        }
+        
+        body.dark-theme .file-item {
+            background-color: rgba(30,35,45,0.7);
+        }
+        
+        body.dark-theme .file-item:hover {
+            background-color: rgba(var(--primary-rgb), 0.2);
+        }
+        
+        body.dark-theme .file-item.active {
+            background-color: rgba(var(--primary-rgb), 0.3);
         }
 
         body.dark-theme .file-list-container {
@@ -457,9 +485,13 @@
 
         /* 响应式调整 */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .app-container {
                 height: calc(100vh - 20px);
-                border-radius: 8px;
+                border-radius: 12px;
             }
             
             .app-header {
@@ -482,11 +514,27 @@
             }
             
             .log-controls {
+                padding: 12px;
+            }
+            
+            .log-content {
+                padding: 12px;
+                font-size: 0.85rem;
+            }
+            
+            .file-item {
                 padding: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .app-container {
+                border-radius: 8px;
             }
             
             .log-content {
                 padding: 10px;
+                font-size: 0.8rem;
             }
         }
     </style>

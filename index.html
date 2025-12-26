@@ -55,17 +55,20 @@
             padding: 20px;
             color: var(--text-color);
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         body::before, body::after {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0; left: 0;
-            width: 100%; height: 2000px;
+            width: 100%; 
+            height: 100vh;
             background-repeat: repeat;
             animation: move-stars 120s linear infinite;
             z-index: -1;
+            pointer-events: none;
         }
         body::before {
             background-image: 
@@ -106,10 +109,11 @@
             box-shadow: var(--container-glow), 0 0 30px rgba(0,0,0,0.2);
             border-radius: 15px;
             overflow: hidden;
-            background-color: rgba(var(--card-bg-rgb, 255, 255, 255), 0.9);
-            transition: all 0.3s ease;
+            background-color: rgba(var(--card-bg-rgb, 255, 255, 255), 0.95);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid rgba(var(--primary-rgb),0.2);
             z-index: 1;
+            backdrop-filter: blur(10px);
         }
 
         .app-header {
@@ -140,16 +144,22 @@
         }
 
         .input-group {
-            transition: box-shadow 0.15s ease-in-out, border-color 0.15s ease-in-out;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid var(--border-color);
-            border-radius: 0.375rem;
+            border-radius: 0.5rem;
             display: flex;
             align-items: stretch;
+            background-color: var(--card-bg);
         }
 
         .input-group:focus-within {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(var(--primary-color), 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.15), 0 4px 12px rgba(var(--primary-rgb), 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .input-group:hover {
+            border-color: rgba(var(--primary-rgb), 0.5);
         }
         
         .input-group .form-control,
@@ -209,22 +219,57 @@
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
-            border-radius: 0.375rem;
-            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
             font-weight: 600;
-            transition: all 0.15s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary:hover {
             background-color: var(--primary-color-dark);
             border-color: var(--primary-color-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 7px 14px rgba(50, 50, 93, .1), 0 3px 6px rgba(0, 0, 0, .08);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(var(--primary-rgb), 0.3), 0 4px 8px rgba(0, 0, 0, .1);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
         .btn-primary:disabled {
             background-color: #a0aee8;
             border-color: #a0aee8;
+            transform: none;
+            cursor: not-allowed;
+        }
+        
+        .btn-danger {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(245, 54, 92, 0.3);
         }
 
         .response-container {
@@ -260,19 +305,32 @@
 
         /* 消息样式 */
         .message {
-            padding: 15px 20px;
-            margin: 12px 0;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(50, 50, 93, .11), 0 1px 3px rgba(0, 0, 0, .08);
-            animation: fadeIn 0.5s ease;
+            padding: 16px 20px;
+            margin: 10px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(50, 50, 93, .08), 0 2px 4px rgba(0, 0, 0, .06);
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            border-left: 5px solid;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .message:hover {
+            transform: translateX(4px);
+            box-shadow: 0 6px 16px rgba(50, 50, 93, .12), 0 3px 6px rgba(0, 0, 0, .08);
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            from { 
+                opacity: 0; 
+                transform: translateY(20px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
         }
 
         .message::before {
@@ -317,6 +375,66 @@
         
         .message.system .message-title {
             color: #8e24aa;
+        }
+
+        /* 统计面板样式 */
+        .stats-container {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: var(--secondary-color);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        body.dark-theme .stat-item {
+            background-color: rgba(30,35,45,0.7);
+        }
+
+        body.dark-theme .stat-value {
+            color: var(--primary-color);
+        }
+
+        /* 进度条样式优化 */
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            background-color: var(--secondary-color);
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+
+        body.dark-theme .progress {
+            background-color: rgba(30,35,45,0.7);
         }
 
         .message-header {
@@ -393,21 +511,58 @@
 
         /* 响应式调整 */
         @media (max-width: 768px) {
-            .app-container {
-                height: calc(100vh - 20px);
-                border-radius: 8px;
-            }
-            
-            .app-header {
+            body {
                 padding: 10px;
             }
             
+            .app-container {
+                height: calc(100vh - 20px);
+                border-radius: 12px;
+            }
+            
+            .app-header {
+                padding: 15px;
+            }
+            
             .app-title {
+                font-size: 1.3rem;
+            }
+            
+            .login-container {
+                padding: 20px;
+            }
+            
+            .stat-value {
                 font-size: 1.2rem;
+            }
+            
+            .message {
+                padding: 12px 16px;
+                margin: 8px 0;
+            }
+            
+            .theme-toggle {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .app-container {
+                border-radius: 8px;
             }
             
             .login-container {
                 padding: 15px;
+            }
+            
+            .stat-item {
+                padding: 8px;
+            }
+            
+            .stat-value {
+                font-size: 1rem;
             }
         }
 
@@ -570,6 +725,23 @@
             background-color: var(--primary-color);
             box-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color);
         }
+        
+        body.dark-theme .app-container {
+            background-color: var(--card-bg);
+            backdrop-filter: blur(15px);
+        }
+        
+        body.dark-theme .input-group {
+            background-color: rgba(30,35,45,0.8);
+        }
+        
+        body.dark-theme .message {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        body.dark-theme .message:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 3px 6px rgba(0, 0, 0, 0.3);
+        }
 
         /* Separate style block for dark-theme specific keyframes if necessary or ensure global keyframes work for both */
         @keyframes pulseColorDark {
@@ -613,11 +785,50 @@
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">
+                <button type="submit" class="btn btn-primary w-100" id="submitBtn">
                     <span class="spinner-border spinner-border-sm d-none" id="submitSpinner"></span>
                     <span>开始执行</span>
                 </button>
             </form>
+            
+            <!-- 进度条 -->
+            <div class="progress mt-3" style="display: none;" id="progressBar">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                     role="progressbar" 
+                     style="width: 0%"
+                     id="progressBarFill">
+                    0%
+                </div>
+            </div>
+            
+            <!-- 统计面板 -->
+            <div class="stats-container mt-3" style="display: none;" id="statsContainer">
+                <div class="row g-2">
+                    <div class="col-4">
+                        <div class="stat-item">
+                            <div class="stat-label">课程</div>
+                            <div class="stat-value" id="statCourses">0</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-item">
+                            <div class="stat-label">考试</div>
+                            <div class="stat-value" id="statExams">0</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-item">
+                            <div class="stat-label">时长</div>
+                            <div class="stat-value" id="statTime">0秒</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 取消按钮 -->
+            <button type="button" class="btn btn-danger w-100 mt-3" id="cancelBtn" style="display: none;">
+                <i class="fas fa-stop"></i> 取消任务
+            </button>
         </div>
         
         <div id="messageOutput" class="response-container">
@@ -649,18 +860,27 @@
                 this.loginForm = document.getElementById('loginForm');
                 this.usernameInput = document.getElementById('username');
                 this.passwordInput = document.getElementById('password');
-                this.submitBtn = this.loginForm.querySelector('button[type="submit"]');
+                this.submitBtn = document.getElementById('submitBtn');
                 this.submitSpinner = document.getElementById('submitSpinner');
                 this.responseContent = document.querySelector('.response-content');
                 this.responseContainer = document.getElementById('messageOutput');
                 this.waitingAnimation = document.querySelector('.waiting-animation');
                 this.themeToggle = document.getElementById('themeToggle');
+                this.progressBar = document.getElementById('progressBar');
+                this.progressBarFill = document.getElementById('progressBarFill');
+                this.statsContainer = document.getElementById('statsContainer');
+                this.statCourses = document.getElementById('statCourses');
+                this.statExams = document.getElementById('statExams');
+                this.statTime = document.getElementById('statTime');
+                this.cancelBtn = document.getElementById('cancelBtn');
+                this.abortController = null;
             },
             
             // 绑定事件
             bindEvents() {
                 this.loginForm.addEventListener('submit', this.handleSubmit.bind(this));
                 this.themeToggle.addEventListener('click', this.toggleTheme.bind(this));
+                this.cancelBtn.addEventListener('click', this.cancelTask.bind(this));
             },
             
             // 处理表单提交
@@ -694,122 +914,160 @@
                 this.sendRequest(username, password);
             },
             
-            // 发送请求到服务器
-            sendRequest(username, password) {
-            // 用于存储接收到的部分数据
-            let buffer = '';
-            
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'process.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            
-            // 设置响应类型为文本，以便处理流式数据
-            xhr.responseType = 'text';
+            // 发送请求到服务器（使用Fetch API，带重试机制）
+            async sendRequest(username, password) {
+                // 创建AbortController用于取消请求
+                this.abortController = new AbortController();
+                const maxRetries = 3;
                 
-                // 添加超时处理
-                xhr.timeout = 300000; // 5分钟超时
-            
-            // 监听数据接收进度
-                xhr.onprogress = (event) => {
-                if (xhr.status === 200) {
-                        // 计算新接收到的数据
-                    const newData = xhr.responseText.substring(buffer.length);
-                        if (newData.trim()) {
-                    buffer = xhr.responseText;
-                    
-                    // 收到第一个响应时，隐藏等待动画
-                            if (this.waitingAnimation.style.display === 'block') {
-                            this.waitingAnimation.style.display = 'none';
-                    }
-                    
-                        // 处理新接收的数据
-                        this.processNewData(newData);
-                }
-                    }
-                };
-                
-                // 处理超时
-                xhr.ontimeout = () => {
-                    console.error('请求超时');
-                    this.setLoadingState(false);
-                    
-                    // 显示超时错误消息
-                    this.showMessage({
-                        type: 'error',
-                        title: '请求超时',
-                        content: '服务器响应时间过长，请稍后再试。'
-                    });
-            };
-            
-            // 处理请求完成事件
-                xhr.onload = () => {
-                if (xhr.status === 200) {
-                        // 请求完成，恢复按钮状态
-                        this.setLoadingState(false);
-                        
-                        // 检查是否有最后一块数据未处理
-                        const finalData = xhr.responseText.substring(buffer.length);
-                        if (finalData.trim()) {
-                            this.processNewData(finalData);
-                        }
-                    } else {
-                        // 处理非200状态码
-                        this.setLoadingState(false);
-                        this.showMessage({
-                            type: 'error',
-                            title: '服务器错误',
-                            content: `服务器返回错误状态码: ${xhr.status}`
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        const response = await fetch('process.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ username: username, password: password }),
+                            signal: this.abortController.signal
                         });
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP错误: ${response.status}`);
+                        }
+                        
+                        // 使用ReadableStream处理流式响应
+                        const reader = response.body.getReader();
+                        const decoder = new TextDecoder();
+                        let buffer = '';
+                        
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            
+                            if (done) {
+                                // 处理最后的数据
+                                if (buffer.trim()) {
+                                    this.processNewData(buffer);
+                                }
+                                break;
+                            }
+                            
+                            // 解码新数据
+                            const chunk = decoder.decode(value, { stream: true });
+                            buffer += chunk;
+                            
+                            // 收到第一个响应时，隐藏等待动画
+                            if (this.waitingAnimation.style.display === 'block') {
+                                this.waitingAnimation.style.display = 'none';
+                            }
+                            
+                            // 处理完整行
+                            const lines = buffer.split('\n');
+                            buffer = lines.pop() || ''; // 保留最后不完整的行
+                            
+                            for (const line of lines) {
+                                if (line.trim()) {
+                                    this.processNewData(line);
+                                }
+                            }
+                        }
+                        
+                        // 请求成功完成
+                        this.setLoadingState(false);
+                        return;
+                        
+                    } catch (error) {
+                        if (error.name === 'AbortError') {
+                            // 用户取消
+                            this.showMessage({
+                                type: 'warning',
+                                title: '任务已取消',
+                                content: '任务已被用户取消'
+                            });
+                            this.setLoadingState(false);
+                            return;
+                        }
+                        
+                        // 如果是最后一次重试，显示错误
+                        if (i === maxRetries - 1) {
+                            this.showMessage({
+                                type: 'error',
+                                title: '连接错误',
+                                content: `无法连接到服务器（已重试${maxRetries}次），请检查网络连接或稍后再试。`
+                            });
+                            this.setLoadingState(false);
+                            return;
+                        }
+                        
+                        // 显示重试提示
+                        const waitTime = (i + 1) * 1000;
+                        this.showMessage({
+                            type: 'warning',
+                            title: '连接失败',
+                            content: `${waitTime / 1000}秒后重试 (${i + 1}/${maxRetries})...`
+                        });
+                        
+                        await this.sleep(waitTime);
+                    }
                 }
-            };
+            },
             
-            // 处理错误
-                xhr.onerror = () => {
-                console.error('请求失败');
-                    this.setLoadingState(false);
-                
-                // 显示错误消息
-                    this.showMessage({
-                    type: 'error',
-                    title: '连接错误',
-                    content: '无法连接到服务器，请检查网络连接或稍后再试。'
-                });
-            };
-                
-                // 发送请求
-                xhr.send(JSON.stringify({ username: username, password: password }));
+            // 睡眠函数
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            },
+            
+            // 取消任务
+            cancelTask() {
+                if (this.abortController) {
+                    this.abortController.abort();
+                    this.abortController = null;
+                }
+                this.setLoadingState(false);
             },
             
             // 处理新接收的数据
             processNewData(newData) {
-                // 将新数据按行分割
-                let lines = newData.split('\n');
-                
-                // 处理每一行数据
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    // 忽略空行和填充字符（服务器可能发送的填充）
-                    if (line && line.indexOf('{') === 0) {
-                        try {
-                            // 尝试解析JSON
-                            const data = JSON.parse(line);
-                            // 显示消息
-                            this.showMessage(data);
-                        } catch (e) {
-                            // 如果解析失败，可能是不完整的JSON，记录但不显示
-                            console.log('解析行数据失败，可能是不完整的JSON:', e, line);
+                const line = newData.trim();
+                // 忽略空行和填充字符
+                if (line && line.indexOf('{') === 0) {
+                    try {
+                        // 尝试解析JSON
+                        const data = JSON.parse(line);
+                        // 显示消息
+                        this.showMessage(data);
+                        
+                        // 更新进度条
+                        if (data.progress !== undefined) {
+                            this.updateProgress(data.progress);
                         }
+                        
+                        // 更新统计信息
+                        if (data.stats) {
+                            this.updateStats(data.stats);
+                        }
+                    } catch (e) {
+                        // 如果解析失败，可能是不完整的JSON，记录但不显示
+                        console.log('解析行数据失败，可能是不完整的JSON:', e, line);
                     }
                 }
                 
-                // 等待动画处理
-                if (lines.length > 0 && lines.some(line => line.trim())) {
-                    // 如果有实际内容，显示等待动画表示后续还有数据
-                    this.waitingAnimation.style.display = 'block';
-                    
-                    // 添加一个短暂的延迟，以确保新消息完全显示
+                // 滚动到底部
                 this.scrollToBottom();
-                }
+            },
+            
+            // 更新进度条
+            updateProgress(progress) {
+                this.progressBar.style.display = 'block';
+                this.progressBarFill.style.width = progress + '%';
+                this.progressBarFill.textContent = progress + '%';
+            },
+            
+            // 更新统计信息
+            updateStats(stats) {
+                this.statsContainer.style.display = 'block';
+                this.statCourses.textContent = stats.completedCourses || 0;
+                this.statExams.textContent = stats.completedExams || 0;
+                this.statTime.textContent = (stats.executionTime || 0).toFixed(1) + '秒';
             },
             
             // 显示单条消息
@@ -880,11 +1138,19 @@
                     this.submitSpinner.classList.remove('d-none');
                     this.submitBtn.querySelector('span:not(.spinner-border-sm)').textContent = '正在执行...';
                     this.waitingAnimation.style.display = 'block';
+                    this.cancelBtn.style.display = 'block';
+                    this.progressBar.style.display = 'block';
+                    this.statsContainer.style.display = 'block';
+                    // 重置进度和统计
+                    this.updateProgress(0);
+                    this.updateStats({ completedCourses: 0, completedExams: 0, executionTime: 0 });
                 } else {
                     this.submitBtn.disabled = false;
                     this.submitSpinner.classList.add('d-none');
                     this.submitBtn.querySelector('span:not(.spinner-border-sm)').textContent = '开始执行';
                     this.waitingAnimation.style.display = 'none';
+                    this.cancelBtn.style.display = 'none';
+                    this.abortController = null;
                 }
             },
             

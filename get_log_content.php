@@ -18,7 +18,15 @@ if (empty($file) || !preg_match('/^(logs|errs)\/(log_|error_)\d{4}-\d{2}-\d{2}\.
 }
 
 // 构建完整的文件路径
-$filePath = __DIR__ . '/' . $file;
+$basePath = realpath(__DIR__);
+$filePath = realpath($basePath . '/' . $file);
+
+// 使用realpath规范化路径，确保文件在允许的目录内（防止目录遍历攻击）
+if ($filePath === false || strpos($filePath, $basePath) !== 0) {
+    header('HTTP/1.1 403 Forbidden');
+    echo "错误：文件路径不在允许的目录内";
+    exit;
+}
 
 // 检查文件是否存在
 if (!file_exists($filePath)) {
