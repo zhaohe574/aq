@@ -304,39 +304,70 @@ sequenceDiagram
     participant F as 前端
     participant B as 后端
     participant A as API
+    participant S as 存储
 
     U->>F: 输入账号密码
-    F->>B: POST 请求
-    B->>B: 验证授权
-    B->>A: 登录获取Token
-    A-->>B: 返回Token
-    B-->>F: 流式输出"登录成功"
+    F->>B: POST 请求 (Fetch API)
+    B->>B: 输入验证 (validateInput)
+    B->>B: 验证授权 (白名单检查)
     
-    B->>A: 获取课程列表(分页)
+    alt Token存在且未过期
+        B->>S: 加载加密Token (decryptToken)
+        S-->>B: 返回Token
+        B->>B: 检查Token过期 (isTokenExpired)
+    else Token不存在或已过期
+        B->>A: 登录获取Token (带重试机制)
+        A-->>B: 返回Token
+        B->>A: 获取用户信息
+        A-->>B: 返回用户姓名
+        B->>S: 加密保存Token (encryptToken)
+        B-->>F: 流式输出"登录成功" + 用户姓名
+    end
+    
+    B->>A: 获取课程列表(分页, cURL)
     A-->>B: 返回课程数据
+    B-->>F: 流式输出进度条 + 统计信息
     loop 每个课程
-        B->>A: 提交完成状态
-        A-->>B: 返回成功
-        B-->>F: 流式输出进度
-    end
-    
-    B->>A: 获取考试列表(分页)
-    A-->>B: 返回考试数据
-    loop 每个考试
-        B->>A: 开始考试
-        A-->>B: 返回题目
-        B-->>F: 流式输出"正在获取考题"
-        loop 每道题
-            B->>A: 提交答案
-            A-->>B: 返回成功
-            B-->>F: 流式输出进度
+        B->>A: 提交完成状态 (带重试机制)
+        alt 请求失败
+            B->>B: 自动重试 (最多3次, 递增延迟)
         end
-        B->>A: 提交考试
-        A-->>B: 返回分数
-        B-->>F: 流式输出结果
+        A-->>B: 返回成功
+        B->>B: 更新统计 (completedCourses++)
+        B->>B: 缓冲日志 (logBuffer)
+        B-->>F: 流式输出进度 + 进度条更新
     end
+    B->>B: 刷新日志缓冲 (flushLogBuffer)
     
-    B-->>F: 流式输出统计信息
+    B->>A: 获取考试列表(分页, cURL)
+    A-->>B: 返回考试数据
+    B-->>F: 流式输出进度条 + 统计信息
+    loop 每个考试
+        B->>A: 开始考试 (带重试机制)
+        A-->>B: 返回题目
+        B-->>F: 流式输出"正在获取考题" + 进度
+        loop 每道题
+            B->>A: 提交答案 (带重试机制)
+            A-->>B: 返回成功
+            B->>B: 缓冲日志
+            B-->>F: 流式输出进度 + 进度条更新
+        end
+        B->>A: 提交考试 (带重试机制)
+        A-->>B: 返回分数
+        B->>B: 更新统计 (completedExams++)
+        B->>B: 缓冲日志
+        B-->>F: 流式输出结果 + 统计信息
+    end
+    B->>B: 刷新日志缓冲
+    
+    B-->>F: 流式输出最终统计信息 (课程数/考试数/执行时长)
+    
+    opt 用户取消任务
+        U->>F: 点击取消按钮
+        F->>B: AbortController 取消请求
+        B->>B: 停止执行
+        B-->>F: 流式输出"任务已取消"
+    end
 ```
 
 ---
