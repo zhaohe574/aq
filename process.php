@@ -62,6 +62,7 @@ class AutoLearnSystem {
     private $username = null;
     private $password = null;
     private $token = null;
+    private $userName = null;
     
     // 统计信息
     private $startTime;
@@ -222,13 +223,14 @@ class AutoLearnSystem {
     private function parseRequest() {
         $data = json_decode(file_get_contents('php://input'), true);
         
-        // 检查数据是否有效
-        if (!is_array($data) || !isset($data['username']) || !isset($data['password'])) {
+        // 检查数据是否有效，支持loginName和username（向后兼容）
+        $usernameField = isset($data['loginName']) ? $data['loginName'] : (isset($data['username']) ? $data['username'] : null);
+        if (!is_array($data) || !$usernameField || !isset($data['password'])) {
             throw new AutoLearnException('无效的请求数据', 0, AutoLearnException::INVALID_INPUT);
         }
         
         // 验证和过滤输入
-        $validated = $this->validateInput($data['username'], $data['password']);
+        $validated = $this->validateInput($usernameField, $data['password']);
         $this->username = $validated['username'];
         $this->password = $validated['password'];
         
@@ -261,7 +263,7 @@ class AutoLearnSystem {
             $this->logMessage(json_encode([
                 'type' => 'info',
                 'title' => '分割线',
-                'content' => str_repeat('=', 80)
+                'content' => str_repeat('=', 120)
             ]), 'info');
             
             // 直接退出，不显示任务结束信息
@@ -298,6 +300,10 @@ class AutoLearnSystem {
                         
                         if (isset($responseData['userCode']) && $responseData['userCode'] === $this->username) {
                             $isLogin = true;
+                            // 获取用户姓名
+                            if (isset($responseData['userName'])) {
+                                $this->userName = $responseData['userName'];
+                            }
                         } else {
                             // token无效，重新登录获取新的token
                             $this->token = null;
@@ -316,7 +322,7 @@ class AutoLearnSystem {
         // 如果未登录，则进行登录
         if (!$isLogin) {
             $url = $this->config['api_base_url'] . '/auth/login';
-            $responseData = $this->sendRequest($url, 'POST', ['username' => $this->username, 'password' => $this->password], false);
+            $responseData = $this->sendRequest($url, 'POST', ['loginName' => $this->username, 'password' => $this->password], false);
             
             if (isset($responseData['code']) && $responseData['code'] === 500) {
                 throw new AutoLearnException($responseData['msg'] ?? '登录失败', 0, AutoLearnException::LOGIN_FAILED);
@@ -337,8 +343,16 @@ class AutoLearnSystem {
             $this->saveTokens($tokens);
         }
         
+        // 获取用户信息
+        $infoUrl = $this->config['api_base_url'] . '/system/user/info';
+        $userInfo = $this->sendRequest($infoUrl, 'GET');
+        if (isset($userInfo['userName'])) {
+            $this->userName = $userInfo['userName'];
+        }
+        
         // 立即发送登录成功消息
-        $this->formatMessage('成功', '登录成功', 'success');
+        $loginMsg = isset($this->userName) ? "登录成功，欢迎 {$this->userName}" : '登录成功';
+        $this->formatMessage('成功', $loginMsg, 'success');
     }
     
     /**
@@ -894,6 +908,11 @@ class AutoLearnSystem {
             'executionTime' => $executionTime
         ];
         
+        // 添加用户姓名（如果存在）
+        if (isset($this->userName)) {
+            $messageArray['userName'] = $this->userName;
+        }
+        
         // 尝试JSON编码，并处理可能的错误
         $msg = json_encode($messageArray, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
         
@@ -1042,26 +1061,34 @@ class AutoLearnSystem {
         
         // 获取当前用户名
         $user = $this->username ?? '未登录用户';
+        if (isset($this->userName)) {
+            $user .= '/' . $this->userName;
+        }
         
         // 解析消息内容
         $decoded = json_decode($message, true);
         $action = isset($decoded['title']) ? $decoded['title'] : '未知操作';
         $content = isset($decoded['content']) ? $decoded['content'] : $message;
         
-        // 格式化日志内容 - 对齐
-        $userPadded = str_pad($user, 7, ' ');
-        $logTypePadded = str_pad($logType, 7, ' ');
-        $ipPadded = str_pad($ip, 12, ' ');
-        
-        // 为处理中文字符对齐，计算实际宽度并补齐空格
-        $actionPadded = $action;
-        $targetWidth = 10;
-        $currentWidth = mb_strwidth($action, 'UTF-8');
-        if ($currentWidth < $targetWidth) {
-            $actionPadded .= str_repeat(' ', $targetWidth - $currentWidth);
-        }
+        // 如果是分割线，直接使用内容，不添加格式化前缀
+        if ($action === '分割线') {
+            $logEntry = $content;
+        } else {
+            // 格式化日志内容 - 对齐
+            $userPadded = str_pad($user, 7, ' ');
+            $logTypePadded = str_pad($logType, 7, ' ');
+            $ipPadded = str_pad($ip, 12, ' ');
+            
+            // 为处理中文字符对齐，计算实际宽度并补齐空格
+            $actionPadded = $action;
+            $targetWidth = 10;
+            $currentWidth = mb_strwidth($action, 'UTF-8');
+            if ($currentWidth < $targetWidth) {
+                $actionPadded .= str_repeat(' ', $targetWidth - $currentWidth);
+            }
 
-        $logEntry = "[{$date} {$time}] [{$logTypePadded}] [用户:{$userPadded}] [IP:{$ipPadded}] [操作:{$actionPadded}] {$content}";
+            $logEntry = "[{$date} {$time}] [{$logTypePadded}] [用户:{$userPadded}] [IP:{$ipPadded}] [操作:{$actionPadded}] {$content}";
+        }
         
         // 添加到缓冲区
         $this->logBuffer[] = [
@@ -1246,7 +1273,7 @@ class AutoLearnSystem {
         $this->logMessage(json_encode([
             'type' => 'info',
             'title' => '分割线',
-            'content' => str_repeat('=', 80)
+            'content' => str_repeat('=', 120)
         ]), 'info');
         
         $this->logMessage(json_encode([
@@ -1273,7 +1300,7 @@ class AutoLearnSystem {
         $this->logMessage(json_encode([
             'type' => 'info',
             'title' => '分割线',
-            'content' => str_repeat('=', 80)
+            'content' => str_repeat('=', 120)
         ]), 'info');
         
         // 最后刷新一次日志缓冲区

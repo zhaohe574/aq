@@ -104,6 +104,7 @@
             width: 100%;
             max-width: 850px;
             height: calc(100vh - 40px);
+            min-height: 500px;
             display: flex;
             flex-direction: column;
             box-shadow: var(--container-glow), 0 0 30px rgba(0,0,0,0.2);
@@ -119,21 +120,34 @@
         .app-header {
             background: linear-gradient(87deg, var(--primary-color) 0, var(--primary-color-dark) 100%) !important;
             color: white;
-            padding: 20px 25px;
+            padding: 10px 20px;
             text-align: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
         }
 
         .app-title {
             margin: 0;
-            font-size: 1.75rem;
+            font-size: 1.4rem;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
 
         .login-container {
-            padding: 15px 35px;
+            padding: 10px 20px;
             border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+        
+        .login-form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .login-form-row .mb-3 {
+            flex: 1;
+            margin-bottom: 0 !important;
         }
 
         .form-label {
@@ -275,13 +289,22 @@
         .response-container {
             flex: 1;
             overflow-y: auto;
-            padding: 15px;
+            padding: 12px 15px;
             background-color: var(--bg-color);
             border-top: 1px solid var(--border-color);
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
         }
-
+        
         .response-content {
+            flex: 1;
+            min-height: 0;
             padding: 10px;
+        }
+        
+        .response-content:empty {
+            min-height: 100%;
         }
 
         /* 自定义滚动条 */
@@ -381,8 +404,9 @@
         .stats-container {
             background-color: var(--card-bg);
             border-radius: 8px;
-            padding: 15px;
+            padding: 10px 15px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
 
         .stat-item {
@@ -422,19 +446,284 @@
         }
 
         /* 进度条样式优化 */
+        .progress-wrapper {
+            position: relative;
+            margin: 24px 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(var(--primary-rgb), 0.03) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(var(--primary-rgb), 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 
+                        0 2px 4px rgba(0, 0, 0, 0.04),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-wrapper:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12), 
+                        0 3px 6px rgba(0, 0, 0, 0.06),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+                        0 0 20px rgba(var(--primary-rgb), 0.1);
+            border-color: rgba(var(--primary-rgb), 0.25);
+        }
+
         .progress {
-            height: 8px;
-            border-radius: 4px;
-            background-color: var(--secondary-color);
+            flex: 1;
+            height: 22px;
+            border-radius: 11px;
+            background: linear-gradient(180deg, #f0f2f5 0%, #e9ecef 50%, #dee2e6 100%);
             overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.12),
+                        inset 0 1px 2px rgba(0, 0, 0, 0.08),
+                        0 0 0 1px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(222, 226, 230, 0.8);
+        }
+
+        .progress::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
+            border-radius: 11px 11px 0 0;
+            pointer-events: none;
         }
 
         .progress-bar {
-            transition: width 0.3s ease;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            background: linear-gradient(90deg, 
+                #5a7eff 0%, 
+                #4c63d2 25%, 
+                #3b52c1 50%, 
+                #2d42b0 75%, 
+                #1e3a9f 100%);
+            border-radius: 11px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(78, 99, 210, 0.6), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                        inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+                        0 0 15px rgba(78, 99, 210, 0.4);
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at right center, 
+                rgba(255, 255, 255, 0.4) 0%, 
+                transparent 70%);
+            border-radius: 11px;
+            pointer-events: none;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.4) 30%,
+                rgba(255, 255, 255, 0.6) 50%,
+                rgba(255, 255, 255, 0.4) 70%,
+                transparent 100%
+            );
+            animation: shimmer 2.5s ease-in-out infinite;
+            border-radius: 11px;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-150%); }
+            50% { transform: translateX(150%); }
+            100% { transform: translateX(-150%); }
+        }
+
+        @keyframes progressPulse {
+            0%, 100% { 
+                box-shadow: 0 2px 10px rgba(78, 99, 210, 0.6), 
+                            inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                            inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+                            0 0 15px rgba(78, 99, 210, 0.4);
+            }
+            50% { 
+                box-shadow: 0 2px 12px rgba(78, 99, 210, 0.8), 
+                            inset 0 1px 0 rgba(255, 255, 255, 0.35),
+                            inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+                            0 0 20px rgba(78, 99, 210, 0.6);
+            }
+        }
+
+        .progress-bar.progress-bar-animated {
+            animation: progressPulse 2s ease-in-out infinite;
+        }
+
+        .progress-bar.progress-bar-striped {
+            background-image: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.25) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.25) 50%,
+                rgba(255, 255, 255, 0.25) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 1.5rem 1.5rem;
+            animation: progressPulse 2s ease-in-out infinite, 
+                       progressStripes 1s linear infinite;
+        }
+
+        @keyframes progressStripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 1.5rem 0; }
+        }
+
+        .progress-text {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            white-space: nowrap;
+            min-width: 50px;
+            text-align: right;
+            flex-shrink: 0;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15),
+                         0 0 8px rgba(var(--primary-rgb), 0.2);
+            letter-spacing: 0.8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-text::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(var(--primary-rgb), 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: width 0.3s ease, height 0.3s ease;
+            pointer-events: none;
+        }
+
+        .progress-text.updating {
+            transform: scale(1.1);
+            color: var(--primary-color-dark);
+        }
+
+        .progress-text.updating::after {
+            width: 60px;
+            height: 60px;
+        }
+
+        body.dark-theme .progress-wrapper {
+            background: linear-gradient(135deg, 
+                rgba(var(--card-bg-rgb), 0.7) 0%, 
+                rgba(var(--primary-rgb), 0.08) 100%);
+            border-color: rgba(var(--primary-rgb), 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 
+                        0 2px 6px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                        0 0 20px rgba(var(--primary-rgb), 0.15);
+        }
+
+        body.dark-theme .progress-wrapper:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 
+                        0 3px 8px rgba(0, 0, 0, 0.4),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                        0 0 30px rgba(var(--primary-rgb), 0.25);
+            border-color: rgba(var(--primary-rgb), 0.4);
         }
 
         body.dark-theme .progress {
-            background-color: rgba(30,35,45,0.7);
+            background: linear-gradient(180deg, 
+                rgba(25, 30, 40, 0.95) 0%, 
+                rgba(20, 25, 35, 0.9) 50%, 
+                rgba(15, 20, 30, 0.95) 100%);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6),
+                        inset 0 1px 2px rgba(0, 0, 0, 0.4),
+                        0 0 0 1px rgba(var(--primary-rgb), 0.2);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+
+        body.dark-theme .progress::before {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+        }
+
+        body.dark-theme .progress-text {
+            color: #7d9eff;
+            text-shadow: 0 0 12px rgba(125, 158, 255, 0.8),
+                         0 1px 3px rgba(0, 0, 0, 0.5),
+                         0 0 20px rgba(125, 158, 255, 0.4);
+        }
+
+        body.dark-theme .progress-text.updating {
+            color: #8faaff;
+            text-shadow: 0 0 15px rgba(143, 170, 255, 1),
+                         0 1px 3px rgba(0, 0, 0, 0.5),
+                         0 0 25px rgba(143, 170, 255, 0.6);
+        }
+
+        body.dark-theme .progress-bar {
+            background: linear-gradient(90deg, 
+                #6b8fff 0%, 
+                #5a7eff 25%, 
+                #4c6eff 50%, 
+                #3d5eff 75%, 
+                #2e4eff 100%);
+            box-shadow: 0 2px 12px rgba(108, 142, 255, 0.7), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                        inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+                        0 0 20px rgba(108, 142, 255, 0.5),
+                        0 0 40px rgba(108, 142, 255, 0.3);
+        }
+
+        body.dark-theme .progress-bar::before {
+            background: radial-gradient(ellipse at right center, 
+                rgba(255, 255, 255, 0.3) 0%, 
+                transparent 70%);
+        }
+
+        @keyframes progressPulseDark {
+            0%, 100% { 
+                box-shadow: 0 2px 12px rgba(108, 142, 255, 0.7), 
+                            inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                            inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+                            0 0 20px rgba(108, 142, 255, 0.5),
+                            0 0 40px rgba(108, 142, 255, 0.3);
+            }
+            50% { 
+                box-shadow: 0 2px 14px rgba(108, 142, 255, 0.9), 
+                            inset 0 1px 0 rgba(255, 255, 255, 0.25),
+                            inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+                            0 0 25px rgba(108, 142, 255, 0.7),
+                            0 0 50px rgba(108, 142, 255, 0.5);
+            }
+        }
+
+        body.dark-theme .progress-bar.progress-bar-animated {
+            animation: progressPulseDark 2s ease-in-out infinite;
         }
 
         .message-header {
@@ -516,20 +805,29 @@
             }
             
             .app-container {
-                height: calc(100vh - 20px);
+                max-height: calc(100vh - 20px);
                 border-radius: 12px;
             }
             
             .app-header {
-                padding: 15px;
+                padding: 10px 15px;
             }
             
             .app-title {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
             }
             
             .login-container {
-                padding: 20px;
+                padding: 10px 15px;
+            }
+            
+            .login-form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .login-form-row .mb-3 {
+                margin-bottom: 12px !important;
             }
             
             .stat-value {
@@ -546,48 +844,115 @@
                 height: 36px;
                 font-size: 1rem;
             }
+            
+            .progress-wrapper {
+                margin: 20px 0 12px 0;
+                padding: 10px 12px;
+                gap: 10px;
+                border-radius: 10px;
+            }
+            
+            .progress-wrapper:hover {
+                transform: none;
+            }
+            
+            .progress {
+                height: 20px;
+                border-radius: 10px;
+            }
+            
+            .progress-bar {
+                border-radius: 10px;
+            }
+            
+            .progress-text {
+                font-size: 0.9rem;
+                min-width: 45px;
+                letter-spacing: 0.5px;
+            }
         }
         
         @media (max-width: 480px) {
             .app-container {
                 border-radius: 8px;
+                max-height: calc(100vh - 10px);
+            }
+            
+            .app-header {
+                padding: 8px 12px;
+            }
+            
+            .app-title {
+                font-size: 1.1rem;
             }
             
             .login-container {
-                padding: 15px;
+                padding: 8px 12px;
             }
             
             .stat-item {
-                padding: 8px;
+                padding: 6px;
             }
             
             .stat-value {
-                font-size: 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .progress-wrapper {
+                margin: 16px 0 10px 0;
+                padding: 8px 10px;
+                gap: 8px;
+                border-radius: 8px;
+            }
+            
+            .progress-wrapper:hover {
+                transform: none;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 
+                            0 2px 4px rgba(0, 0, 0, 0.04),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            }
+            
+            .progress {
+                height: 18px;
+                border-radius: 9px;
+            }
+            
+            .progress-bar {
+                border-radius: 9px;
+            }
+            
+            .progress-text {
+                font-size: 0.85rem;
+                min-width: 40px;
+                letter-spacing: 0.3px;
             }
         }
 
         /* 深色模式切换 */
         .theme-toggle {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(var(--primary-rgb), 0.15);
-            border: none;
-            color: #c8d0d8;
-            font-size: 1.25rem;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.1rem;
             cursor: pointer;
-            z-index: 1000;
+            z-index: 10;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s ease;
+            transition: all 0.2s ease;
         }
 
         .theme-toggle:hover {
-            background: rgba(var(--primary-rgb), 0.25);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(1.1);
         }
 
         /* 深色模式样式 */
@@ -758,12 +1123,63 @@
             /* Re-apply animation with dark theme specific or correctly scoped keyframes */
             animation: scan 1.5s ease-in-out infinite, pulseColorDark 1.5s ease-in-out infinite alternate;
         }
+        
+        /* 用户姓名显示样式 */
+        .user-name-display {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }
+        
+        .user-name-display i {
+            font-size: 1.1rem;
+        }
+        
+        .user-name-display:hover {
+            opacity: 1;
+        }
+        
+        body.dark-theme .user-name-display {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        @media (max-width: 768px) {
+            .user-name-display {
+                left: 15px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .user-name-display {
+                left: 10px;
+                font-size: 0.8rem;
+                gap: 6px;
+            }
+            
+            .user-name-display i {
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="app-header position-relative">
             <h1 class="app-title">智慧学习助手</h1>
+            <div class="user-name-display" id="userNameDisplay" style="display: none;">
+                <i class="fas fa-user-circle"></i>
+                <span id="userNameText"></span>
+            </div>
             <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式">
                 <i class="fas fa-moon"></i>
             </button>
@@ -771,18 +1187,20 @@
         
         <div class="login-container">
             <form id="loginForm">
-                <div class="mb-3">
-                    <label for="username" class="form-label">账号：</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        <input type="text" class="form-control" id="username" name="username" required>
+                <div class="login-form-row">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">账号：</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
                     </div>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">密码：</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-key"></i></span>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">密码：</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary w-100" id="submitBtn">
@@ -792,13 +1210,15 @@
             </form>
             
             <!-- 进度条 -->
-            <div class="progress mt-3" style="display: none;" id="progressBar">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                     role="progressbar" 
-                     style="width: 0%"
-                     id="progressBarFill">
-                    0%
+            <div class="progress-wrapper" style="display: none;" id="progressBar">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" 
+                         style="width: 0%"
+                         id="progressBarFill">
+                    </div>
                 </div>
+                <div class="progress-text" id="progressText">0%</div>
             </div>
             
             <!-- 统计面板 -->
@@ -868,11 +1288,14 @@
                 this.themeToggle = document.getElementById('themeToggle');
                 this.progressBar = document.getElementById('progressBar');
                 this.progressBarFill = document.getElementById('progressBarFill');
+                this.progressText = document.getElementById('progressText');
                 this.statsContainer = document.getElementById('statsContainer');
                 this.statCourses = document.getElementById('statCourses');
                 this.statExams = document.getElementById('statExams');
                 this.statTime = document.getElementById('statTime');
                 this.cancelBtn = document.getElementById('cancelBtn');
+                this.userNameDisplay = document.getElementById('userNameDisplay');
+                this.userNameText = document.getElementById('userNameText');
                 this.abortController = null;
             },
             
@@ -927,7 +1350,7 @@
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({ username: username, password: password }),
+                            body: JSON.stringify({ loginName: username, password: password }),
                             signal: this.abortController.signal
                         });
                         
@@ -1045,6 +1468,11 @@
                         if (data.stats) {
                             this.updateStats(data.stats);
                         }
+                        
+                        // 更新用户姓名显示
+                        if (data.userName) {
+                            this.updateUserName(data.userName);
+                        }
                     } catch (e) {
                         // 如果解析失败，可能是不完整的JSON，记录但不显示
                         console.log('解析行数据失败，可能是不完整的JSON:', e, line);
@@ -1059,7 +1487,16 @@
             updateProgress(progress) {
                 this.progressBar.style.display = 'block';
                 this.progressBarFill.style.width = progress + '%';
-                this.progressBarFill.textContent = progress + '%';
+                if (this.progressText) {
+                    // 添加更新动画
+                    this.progressText.classList.add('updating');
+                    this.progressText.textContent = progress + '%';
+                    
+                    // 移除动画类
+                    setTimeout(() => {
+                        this.progressText.classList.remove('updating');
+                    }, 300);
+                }
             },
             
             // 更新统计信息
@@ -1068,6 +1505,14 @@
                 this.statCourses.textContent = stats.completedCourses || 0;
                 this.statExams.textContent = stats.completedExams || 0;
                 this.statTime.textContent = (stats.executionTime || 0).toFixed(1) + '秒';
+            },
+            
+            // 更新用户姓名显示
+            updateUserName(userName) {
+                if (this.userNameDisplay && this.userNameText) {
+                    this.userNameText.textContent = userName;
+                    this.userNameDisplay.style.display = 'flex';
+                }
             },
             
             // 显示单条消息
