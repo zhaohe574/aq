@@ -322,7 +322,7 @@ class AutoLearnSystem {
         // 如果未登录，则进行登录
         if (!$isLogin) {
             $url = $this->config['api_base_url'] . '/auth/login';
-            $responseData = $this->sendRequest($url, 'POST', ['loginName' => $this->username, 'password' => $this->password], false);
+            $responseData = $this->sendRequest($url, 'POST', ['username' => $this->username, 'password' => $this->password], false);
             
             if (isset($responseData['code']) && $responseData['code'] === 500) {
                 throw new AutoLearnException($responseData['msg'] ?? '登录失败', 0, AutoLearnException::LOGIN_FAILED);
