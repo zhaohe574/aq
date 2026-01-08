@@ -1,6 +1,9 @@
 # 敏感信息文件
 tokens.json
 
+.kiro/
+.shared/
+
 # 日志文件
 logs/
 errs/

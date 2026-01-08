@@ -4,1038 +4,778 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>日志查看器 - 智慧学习助手</title>
-    <!-- Bootstrap 5 CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome 图标 -->
     <link rel="stylesheet" href="css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #5E72E4;
-            --primary-color-dark: #324cdd;
-            --secondary-color: #f4f5f7;
-            --success-color: #2dce89;
-            --error-color: #f5365c;
-            --info-color: #11cdef;
-            --warning-color: #fb6340;
-            --bg-color: #f8f9fe;
-            --card-bg: #ffffff;
-            --text-color: #32325d;
-            --text-muted: #8898aa;
-            --border-color: #dee2e6;
-            --box-shadow: 0 0 2rem 0 rgba(136, 152, 170, .15);
-            --sci-fi-bg-start: #0d0d2b;
-            --sci-fi-bg-mid: #1a0033;
-            --sci-fi-bg-end: #00264d;
-            --container-glow: 0 0 15px rgba(var(--primary-rgb, 94, 114, 228), 0.4);
-            --primary-rgb: 94, 114, 228;
-            --card-bg-rgb: 255, 255, 255;
+            --primary: #2563EB;
+            --primary-dark: #1D4ED8;
+            --primary-light: #3B82F6;
+            --secondary: #64748B;
+            --success: #10B981;
+            --error: #EF4444;
+            --warning: #F59E0B;
+            --info: #06B6D4;
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #F1F5F9;
+            --bg-card: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+            --border: #E2E8F0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --transition: all 0.2s ease-out;
         }
 
-        @keyframes animatedBackground {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes move-stars {
-            0% {transform: translateY(0px);}
-            100% {transform: translateY(-2000px);}
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Open Sans', sans-serif;
-            background: linear-gradient(135deg, var(--sci-fi-bg-start), var(--sci-fi-bg-mid), var(--sci-fi-bg-end));
-            background-size: 400% 400%;
-            animation: animatedBackground 25s ease infinite;
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #6B8DD6 100%);
+            background-attachment: fixed;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            padding: 20px;
-            color: var(--text-color);
-            position: relative;
-            overflow-x: hidden;
-            overflow-y: auto;
+            justify-content: center;
+            padding: 1rem;
+            color: var(--text-primary);
         }
 
-        body::before, body::after {
+        body::before {
             content: '';
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; 
-            height: 100vh;
-            background-repeat: repeat;
-            animation: move-stars 120s linear infinite;
-            z-index: -1;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 50%);
             pointer-events: none;
-        }
-        body::before {
-            background-image: 
-                radial-gradient(1px 1px at 10px 20px, #fff, rgba(255,255,255,0)),
-                radial-gradient(1.5px 1.5px at 30px 50px, #fff, rgba(255,255,255,0)),
-                radial-gradient(1px 1px at 50px 80px, #ddd, rgba(255,255,255,0)),
-                radial-gradient(2px 2px at 70px 120px, #fff, rgba(255,255,255,0)),
-                radial-gradient(1px 1px at 90px 10px, #fff, rgba(255,255,255,0)),
-                radial-gradient(1.5px 1.5px at 110px 90px, #eee, rgba(255,255,255,0)),
-                radial-gradient(1px 1px at 130px 40px, #fff, rgba(255,255,255,0)),
-                radial-gradient(1.5px 1.5px at 150px 110px, #fff, rgba(255,255,255,0)),
-                radial-gradient(2px 2px at 170px 60px, #ddd, rgba(255,255,255,0)),
-                radial-gradient(1px 1px at 190px 130px, #fff, rgba(255,255,255,0)),
-                radial-gradient(1.5px 1.5px at 210px 30px, #eee, rgba(255,255,255,0)),
-                radial-gradient(1px 1px at 230px 100px, #fff, rgba(255,255,255,0));
-            background-size: 200px 200px;
-            opacity: 0.75;
-        }
-        body::after {
-            background-image: 
-                radial-gradient(1.5px 1.5px at 20px 140px, #fff, rgba(255,255,255,0)),
-                radial-gradient(1px 1px at 60px 180px, #ddd, rgba(255,255,255,0)),
-                radial-gradient(2px 2px at 100px 10px, #fff, rgba(255,255,255,0)),
-                radial-gradient(1.5px 1.5px at 140px 70px, #eee, rgba(255,255,255,0)),
-                radial-gradient(1px 1px at 180px 120px, #fff, rgba(255,255,255,0)),
-                radial-gradient(2.5px 2.5px at 220px 190px, #fff, rgba(255,255,255,0));
-            background-size: 280px 280px;
-            animation-duration: 180s;
-            opacity: 0.65;
+            z-index: 0;
         }
 
         .app-container {
             width: 100%;
-            max-width: 1800px;
-            height: calc(100vh - 40px);
+            max-width: 1400px;
+            height: calc(100vh - 2rem);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255,255,255,0.2);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
             display: flex;
             flex-direction: column;
-            box-shadow: var(--container-glow), 0 0 30px rgba(0,0,0,0.2);
-            border-radius: 15px;
-            overflow: hidden;
-            background-color: rgba(var(--card-bg-rgb, 255, 255, 255), 0.95);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(var(--primary-rgb),0.2);
-            z-index: 1;
-            backdrop-filter: blur(10px);
         }
 
+        /* Header */
         .app-header {
-            background: linear-gradient(87deg, var(--primary-color) 0, var(--primary-color-dark) 100%) !important;
-            color: white;
-            padding: 20px 25px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 1rem 1.5rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: var(--radius);
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-1px);
+        }
+
+        .back-btn svg {
+            width: 1rem;
+            height: 1rem;
         }
 
         .app-title {
-            margin: 0;
-            font-size: 1.75rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
             font-weight: 600;
-            letter-spacing: 0.5px;
+            color: white;
         }
 
-        .header-actions {
+        .theme-toggle {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            cursor: pointer;
             display: flex;
-            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
         }
 
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* Main Content */
         .main-content {
             flex: 1;
             display: flex;
             overflow: hidden;
         }
 
-        .file-list-container {
-            width: 250px;
-            background-color: var(--secondary-color);
-            border-right: 1px solid var(--border-color);
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            flex-shrink: 0;
         }
 
-        .file-list-header {
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-            background-color: var(--card-bg);
-        }
-
-        .file-type-tabs {
+        .tabs {
             display: flex;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border);
         }
 
-        .file-type-tab {
+        .tab {
             flex: 1;
-            padding: 10px;
+            padding: 0.875rem;
             text-align: center;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-muted);
             cursor: pointer;
-            transition: all 0.2s;
             border-bottom: 2px solid transparent;
+            transition: var(--transition);
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
         }
 
-        .file-type-tab.active {
-            border-bottom: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            font-weight: 600;
+        .tab:hover {
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .search-box {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.625rem 0.875rem 0.625rem 2.25rem;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.8125rem;
+            background: var(--bg-secondary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 0.75rem center;
+            transition: var(--transition);
+            color: var(--text-primary);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .file-list {
             flex: 1;
             overflow-y: auto;
-            padding: 10px;
+            padding: 0.5rem;
+        }
+
+        .file-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .file-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
         }
 
         .file-item {
-            padding: 12px;
-            margin-bottom: 6px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 10px;
-            background-color: var(--card-bg);
+            gap: 0.625rem;
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
         }
 
         .file-item:hover {
-            background-color: rgba(var(--primary-rgb), 0.15);
+            background: var(--bg-secondary);
             transform: translateX(4px);
-            box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.1);
         }
 
         .file-item.active {
-            background-color: rgba(var(--primary-rgb), 0.25);
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
             font-weight: 600;
-            border-left: 3px solid var(--primary-color);
+            border-left: 3px solid var(--primary);
+            margin-left: -3px;
+            padding-left: calc(0.75rem + 3px);
         }
 
-        .log-content-container {
+        .file-item svg {
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+        }
+
+        .file-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Log Content */
+        .log-panel {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        .log-controls {
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-            background-color: var(--card-bg);
+        .log-toolbar {
+            padding: 0.75rem 1rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .log-search {
+            flex: 1;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .log-search-input {
+            flex: 1;
+            padding: 0.625rem 1rem;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            transition: var(--transition);
+            color: var(--text-primary);
+            background: var(--bg-card);
+        }
+
+        .log-search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            padding: 0.625rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            border: none;
+        }
+
+        .btn svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
         }
 
         .log-content {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            background-color: var(--bg-color);
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
+            padding: 1rem;
+            background: var(--bg-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8125rem;
+            line-height: 1.7;
         }
 
-        .log-entry {
-            margin-bottom: 5px;
-            padding: 5px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .log-entry:last-child {
-            border-bottom: none;
-        }
-
-        /* 日志级别样式 */
-        .log-level {
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 3px;
-            margin-right: 8px;
-        }
-
-        .log-level.info {
-            color: var(--info-color);
-            background-color: rgba(var(--info-color), 0.1);
-        }
-
-        .log-level.error {
-            color: var(--error-color);
-            background-color: rgba(var(--error-color), 0.1);
-        }
-
-        .log-level.warning {
-            color: var(--warning-color);
-            background-color: rgba(var(--warning-color), 0.1);
-        }
-
-        .log-level.success {
-            color: var(--success-color);
-            background-color: rgba(var(--success-color), 0.1);
-        }
-
-        /* 日志元素样式 */
-        .log-time {
-            color: var(--text-muted);
-            font-family: 'Courier New', monospace;
-        }
-
-        .log-user {
-            color: var(--primary-color);
-            font-weight: 500;
-        }
-
-        .log-ip {
-            color: var(--text-muted);
-            font-family: 'Courier New', monospace;
-        }
-
-        .log-action {
-            color: var(--success-color);
-            font-weight: 500;
-        }
-
-        .log-message {
-            color: var(--text-color);
-            margin-left: 8px;
-        }
-
-        /* 搜索结果高亮 */
-        .highlight {
-            background-color: #ffeb3b;
-            padding: 2px 0;
-        }
-
-        /* 自定义滚动条 */
-        .file-list::-webkit-scrollbar,
         .log-content::-webkit-scrollbar {
             width: 8px;
         }
 
-        .file-list::-webkit-scrollbar-track,
         .log-content::-webkit-scrollbar-track {
-            background: var(--secondary-color);
-            border-radius: 4px;
+            background: var(--bg-secondary);
         }
 
-        .file-list::-webkit-scrollbar-thumb,
         .log-content::-webkit-scrollbar-thumb {
-            background: #ced4da;
+            background: var(--border);
             border-radius: 4px;
         }
 
-        .file-list::-webkit-scrollbar-thumb:hover,
-        .log-content::-webkit-scrollbar-thumb:hover {
-            background: #adb5bd;
+        .log-entry {
+            padding: 0.375rem 0.5rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.25rem;
+            transition: var(--transition);
         }
 
-        /* 加载动画 */
+        .log-entry:hover {
+            background: rgba(0,0,0,0.03);
+        }
+
+        .log-time {
+            color: var(--text-muted);
+            margin-right: 0.5rem;
+        }
+
+        .log-level {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.6875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-right: 0.5rem;
+        }
+
+        .log-level.info { background: rgba(6, 182, 212, 0.15); color: var(--info); }
+        .log-level.success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .log-level.warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .log-level.error { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+
+        .log-user { color: var(--primary); font-weight: 500; }
+        .log-ip { color: var(--text-muted); }
+        .log-action { color: var(--success); font-weight: 500; }
+        .log-message { color: var(--text-primary); }
+
+        .highlight {
+            background: rgba(245, 158, 11, 0.3);
+            padding: 0 0.125rem;
+            border-radius: 2px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .empty-state svg {
+            width: 3rem;
+            height: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Loading */
         .loading-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.8);
             display: none;
-        }
-
-        .loading-spinner {
-            color: white;
-        }
-
-        /* 深色模式切换 */
-        .theme-toggle {
-            background: rgba(var(--primary-rgb), 0.15);
-            border: none;
-            color: #c8d0d8;
-            font-size: 1.25rem;
-            cursor: pointer;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s ease;
+            z-index: 100;
         }
 
-        .theme-toggle:hover {
-            background: rgba(var(--primary-rgb), 0.25);
+        .spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
 
-        /* 返回主页按钮 */
-        .back-button {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .back-button:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        
-        .back-button:active {
-            transform: translateY(0);
-        }
-
-        /* 深色模式样式 */
+        /* Dark Theme */
         body.dark-theme {
-            --sci-fi-bg-start: #050515;
-            --sci-fi-bg-mid: #0d001a;
-            --sci-fi-bg-end: #001326;
-            --card-bg-rgb: 22, 26, 37;
-            --card-bg: rgba(var(--card-bg-rgb), 0.85);
-            --text-color: #c8d0d8;
-            --text-muted: #7a8aa0;
-            --border-color: #303848;
-            --secondary-color: #1e222b;
-            --primary-rgb: 100, 120, 230;
-            --container-glow: 0 0 25px rgba(var(--primary-rgb), 0.5);
-            color: var(--text-color);
+            --bg-primary: #0F172A;
+            --bg-secondary: #1E293B;
+            --bg-card: #1E293B;
+            --text-primary: #F1F5F9;
+            --text-secondary: #CBD5E1;
+            --text-muted: #64748B;
+            --border: #334155;
         }
-        
+
         body.dark-theme .app-container {
-             background-color: var(--card-bg);
-             box-shadow: var(--container-glow), 0 0 35px rgba(0,0,0,0.6);
-             border-color: rgba(var(--primary-rgb),0.3);
-             backdrop-filter: blur(15px);
-        }
-        
-        body.dark-theme .file-item {
-            background-color: rgba(30,35,45,0.7);
-        }
-        
-        body.dark-theme .file-item:hover {
-            background-color: rgba(var(--primary-rgb), 0.2);
-        }
-        
-        body.dark-theme .file-item.active {
-            background-color: rgba(var(--primary-rgb), 0.3);
+            background: rgba(15, 23, 42, 0.95);
         }
 
-        body.dark-theme .file-list-container {
-            background-color: var(--secondary-color);
-            border-right-color: var(--border-color);
+        body.dark-theme .search-input,
+        body.dark-theme .log-search-input {
+            background: var(--bg-primary);
+            border-color: var(--border);
+            color: var(--text-primary);
         }
 
-        body.dark-theme .file-list-header {
-            background-color: var(--card-bg);
-            border-bottom-color: var(--border-color);
+        body.dark-theme .log-entry:hover {
+            background: rgba(255,255,255,0.03);
         }
 
-        body.dark-theme .file-type-tabs {
-            border-bottom-color: var(--border-color);
+        body.dark-theme .loading-overlay {
+            background: rgba(15, 23, 42, 0.8);
         }
 
-        body.dark-theme .file-item.active {
-            background-color: rgba(var(--primary-rgb), 0.3);
-        }
-
-        body.dark-theme .log-controls {
-            background-color: var(--card-bg);
-            border-bottom-color: var(--border-color);
-        }
-
-        body.dark-theme .log-content {
-            background-color: rgba(10,12,20,0.85);
-            color: var(--text-color);
-        }
-
-        body.dark-theme .log-entry {
-            border-bottom-color: rgba(255,255,255,0.05);
-        }
-
-        body.dark-theme .highlight {
-            background-color: rgba(255, 235, 59, 0.5);
-            color: #000;
-        }
-
-        /* 深色模式下的日志元素样式 */
-        body.dark-theme .log-time {
-            color: var(--text-muted);
-        }
-
-        body.dark-theme .log-user {
-            color: var(--primary-color);
-        }
-
-        body.dark-theme .log-ip {
-            color: var(--text-muted);
-        }
-
-        body.dark-theme .log-action {
-            color: var(--success-color);
-        }
-
-        body.dark-theme .log-message {
-            color: var(--text-color);
-        }
-
-        /* 响应式调整 */
+        /* Responsive */
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .app-container {
-                height: calc(100vh - 20px);
-                border-radius: 12px;
-            }
-            
-            .app-header {
-                padding: 15px;
-            }
-            
-            .app-title {
-                font-size: 1.3rem;
-            }
-            
-            .main-content {
-                flex-direction: column;
-            }
-            
-            .file-list-container {
-                width: 100%;
-                height: 200px;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-            }
-            
-            .log-controls {
-                padding: 12px;
-            }
-            
-            .log-content {
-                padding: 12px;
-                font-size: 0.85rem;
-            }
-            
-            .file-item {
-                padding: 10px;
-            }
+            body { padding: 0.5rem; }
+            .app-container { height: calc(100vh - 1rem); border-radius: var(--radius-lg); }
+            .main-content { flex-direction: column; }
+            .sidebar { width: 100%; height: 200px; border-right: none; border-bottom: 1px solid var(--border); }
+            .app-title { font-size: 1rem; }
+            .log-toolbar { flex-wrap: wrap; }
         }
-        
-        @media (max-width: 480px) {
-            .app-container {
-                border-radius: 8px;
-            }
-            
-            .log-content {
-                padding: 10px;
-                font-size: 0.8rem;
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <div class="app-header">
-            <div class="header-actions">
-                <button class="back-button" id="backButton">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>返回主页</span>
-                </button>
+        <header class="app-header">
+            <div class="header-left">
+                <a href="index.html" class="back-btn" id="backBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m15 18-6-6 6-6"/>
+                    </svg>
+                    返回
+                </a>
+                <h1 class="app-title">日志查看器</h1>
             </div>
-            <h1 class="app-title">日志查看器</h1>
-            <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式">
-                <i class="fas fa-moon"></i>
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="display:none">
+                    <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
             </button>
-        </div>
-        
+        </header>
+
         <div class="main-content">
-            <div class="file-list-container">
-                <div class="file-type-tabs">
-                    <div class="file-type-tab active" data-type="log">操作日志</div>
-                    <div class="file-type-tab" data-type="error">错误日志</div>
+            <aside class="sidebar">
+                <div class="tabs">
+                    <button class="tab active" data-type="log">操作日志</button>
+                    <button class="tab" data-type="error">错误日志</button>
                 </div>
-                <div class="file-list-header">
-                    <input type="text" id="fileSearch" class="form-control" placeholder="搜索日志文件...">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="fileSearch" placeholder="搜索文件...">
                 </div>
-                <div class="file-list" id="fileList">
-                    <!-- 日志文件列表将通过JavaScript动态生成 -->
-                </div>
-            </div>
-            
-            <div class="log-content-container">
-                <div class="log-controls">
-                    <div class="input-group">
-                        <input type="text" id="logSearch" class="form-control" placeholder="搜索日志内容...">
-                        <button class="btn btn-primary" id="searchButton">
-                            <i class="fas fa-search"></i>
+                <div class="file-list" id="fileList"></div>
+            </aside>
+
+            <main class="log-panel">
+                <div class="log-toolbar">
+                    <div class="log-search">
+                        <input type="text" class="log-search-input" id="logSearch" placeholder="搜索日志内容...">
+                        <button class="btn btn-primary" id="searchBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                            </svg>
                             搜索
                         </button>
-                        <button class="btn btn-secondary" id="clearSearchButton">
-                            <i class="fas fa-times"></i>
+                        <button class="btn btn-secondary" id="clearBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6 6 18M6 6l12 12"/>
+                            </svg>
                             清除
                         </button>
                     </div>
                 </div>
                 <div class="log-content" id="logContent">
-                    <p class="text-center text-muted" style="margin-top: 50px;">
-                        请从左侧选择要查看的日志文件
-                    </p>
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                        <p>请从左侧选择要查看的日志文件</p>
+                    </div>
                 </div>
-            </div>
+            </main>
+        </div>
+
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
         </div>
     </div>
 
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner">
-            <div class="spinner-border" role="status">
-                <span class="sr-only">加载中...</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap 5 JS Bundle with Popper -->
     <script src="js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // 主应用模块
         const LogViewer = {
-            // 初始化应用
             init() {
                 this.cacheElements();
                 this.bindEvents();
                 this.loadSavedTheme();
                 this.loadLogFiles('log');
             },
-            
-            // 缓存DOM元素
+
             cacheElements() {
                 this.themeToggle = document.getElementById('themeToggle');
-                this.backButton = document.getElementById('backButton');
-                this.fileTypeTabs = document.querySelectorAll('.file-type-tab');
-                this.fileListElement = document.getElementById('fileList'); // 修改为更明确的变量名
+                this.tabs = document.querySelectorAll('.tab');
+                this.fileList = document.getElementById('fileList');
                 this.fileSearch = document.getElementById('fileSearch');
                 this.logContent = document.getElementById('logContent');
                 this.logSearch = document.getElementById('logSearch');
-                this.searchButton = document.getElementById('searchButton');
-                this.clearSearchButton = document.getElementById('clearSearchButton');
+                this.searchBtn = document.getElementById('searchBtn');
+                this.clearBtn = document.getElementById('clearBtn');
                 this.loadingOverlay = document.getElementById('loadingOverlay');
                 this.currentFileType = 'log';
                 this.currentFile = null;
-                this.fileArray = []; // 添加新变量存储文件数组
+                this.fileArray = [];
             },
 
-            // 绑定事件
             bindEvents() {
                 this.themeToggle.addEventListener('click', this.toggleTheme.bind(this));
-                this.backButton.addEventListener('click', this.goBackToHome.bind(this));
-                
-                // 文件类型切换
-                this.fileTypeTabs.forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        const type = tab.dataset.type;
-                        this.switchFileType(type);
-                    });
+                this.tabs.forEach(tab => {
+                    tab.addEventListener('click', () => this.switchFileType(tab.dataset.type));
                 });
-                
-                // 文件搜索
                 this.fileSearch.addEventListener('input', this.filterFiles.bind(this));
-                
-                // 日志内容搜索
-                this.searchButton.addEventListener('click', this.searchLogContent.bind(this));
-                this.clearSearchButton.addEventListener('click', this.clearSearch.bind(this));
-                this.logSearch.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.searchLogContent();
-                    }
+                this.searchBtn.addEventListener('click', this.searchLogContent.bind(this));
+                this.clearBtn.addEventListener('click', this.clearSearch.bind(this));
+                this.logSearch.addEventListener('keypress', e => {
+                    if (e.key === 'Enter') this.searchLogContent();
                 });
             },
 
-            // 切换文件类型
             switchFileType(type) {
-                // 更新活动标签
-                this.fileTypeTabs.forEach(tab => {
-                    if (tab.dataset.type === type) {
-                        tab.classList.add('active');
-                    } else {
-                        tab.classList.remove('active');
-                    }
+                this.tabs.forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.type === type);
                 });
-                
-                // 加载对应类型的文件
                 this.currentFileType = type;
                 this.loadLogFiles(type);
-                
-                // 清空当前内容
-                this.logContent.innerHTML = '<p class="text-center text-muted" style="margin-top: 50px;">请从左侧选择要查看的日志文件</p>';
+                this.logContent.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>请从左侧选择要查看的日志文件</p></div>';
                 this.currentFile = null;
             },
 
-            // 加载日志文件列表
-            loadLogFiles: function(fileType) {
+            loadLogFiles(fileType) {
                 this.showLoading(true);
-                this.currentFileType = fileType;
-                
-                // 使用PHP脚本获取真实文件列表
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', `get_file_list.php?type=${fileType}`, true);
-                xhr.onreadystatechange = () => {
-                    if (xhr.readyState === 4) {
+                fetch(`get_file_list.php?type=${fileType}`)
+                    .then(res => res.json())
+                    .then(data => {
                         this.showLoading(false);
-                        if (xhr.status === 200) {
-                            try {
-                                // 检查响应是否为空
-                                if (!xhr.responseText || xhr.responseText.trim() === '') {
-                                    console.warn('服务器返回了空响应');
-                                    this.fileArray = [];
-                                    this.renderFileList(this.fileArray);
-                                    return;
-                                }
-                                
-                                const response = JSON.parse(xhr.responseText);
-                                console.log('获取到的文件列表:', response);
-                                if (response.success && response.files && response.files.length > 0) {
-                                    this.fileArray = response.files; // 使用新变量存储文件数组
-                                    this.renderFileList(this.fileArray); // 传递文件数组给renderFileList
-                                    
-                                    // 如果有文件，自动选择第一个
-                                    if (this.fileArray.length > 0) {
-                                        this.loadLogFile(this.fileArray[0]);
-                                    }
-                                } else {
-                                    console.warn('服务器返回的文件列表为空');
-                                    this.fileArray = [];
-                                    this.renderFileList(this.fileArray);
-                                }
-                            } catch (e) {
-                                console.error('解析文件列表失败:', e, '原始响应:', xhr.responseText);
-                                this.fileArray = [];
-                                this.renderFileList(this.fileArray);
+                        if (data.success && data.files?.length > 0) {
+                            this.fileArray = data.files;
+                            this.renderFileList(this.fileArray);
+                            if (this.fileArray.length > 0) {
+                                this.loadLogFile(this.fileArray[0]);
                             }
                         } else {
-                            console.error('获取文件列表失败，HTTP状态码:', xhr.status);
                             this.fileArray = [];
-                            this.renderFileList(this.fileArray);
+                            this.renderFileList([]);
                         }
-                    }
-                };
-                xhr.onerror = (error) => {
-                    console.error('请求文件列表时发生网络错误:', error);
-                    this.showLoading(false);
-                    this.fileArray = [];
-                    this.renderFileList(this.fileArray);
-                };
-                xhr.send();
+                    })
+                    .catch(err => {
+                        console.error('Error loading files:', err);
+                        this.showLoading(false);
+                        this.fileArray = [];
+                        this.renderFileList([]);
+                    });
             },
 
-            // 渲染文件列表
             renderFileList(files) {
-                this.fileListElement.innerHTML = ''; // 使用正确的DOM元素引用
-                
-                if (!files || files.length === 0) {
-                    const emptyMessage = document.createElement('div');
-                    emptyMessage.className = 'text-center text-muted';
-                    emptyMessage.style.padding = '20px';
-                    emptyMessage.textContent = '没有找到日志文件';
-                    this.fileListElement.appendChild(emptyMessage);
+                if (!files?.length) {
+                    this.fileList.innerHTML = '<div class="empty-state" style="padding:2rem"><p>没有找到日志文件</p></div>';
                     return;
                 }
-                
-                files.forEach(file => {
+
+                this.fileList.innerHTML = files.map(file => {
                     const fileName = file.split('/').pop();
-                    const fileItem = document.createElement('div');
-                    fileItem.className = `file-item ${this.currentFile === file ? 'active' : ''}`;
-                    fileItem.dataset.file = file;
-                    
-                    // 确定文件图标
-                    let fileIcon = 'fa-file-alt';
-                    if (fileName.includes('error')) {
-                        fileIcon = 'fa-file-exclamation';
-                    }
-                    
-                    fileItem.innerHTML = `
-                        <i class="fas ${fileIcon}"></i>
-                        <span class="file-name">${fileName}</span>
-                    `;
-                    
-                    // 添加点击事件
-                    fileItem.addEventListener('click', () => {
-                        // 移除其他文件的活动状态
-                        document.querySelectorAll('.file-item').forEach(item => {
-                            item.classList.remove('active');
-                        });
-                        
-                        // 添加当前文件的活动状态
-                        fileItem.classList.add('active');
-                        
-                        // 加载文件内容
-                        this.currentFile = file;
-                        this.loadLogFile(file);
+                    const isActive = this.currentFile === file;
+                    const icon = fileName.includes('error') 
+                        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+                    return `<div class="file-item ${isActive ? 'active' : ''}" data-file="${file}">${icon}<span class="file-name">${fileName}</span></div>`;
+                }).join('');
+
+                this.fileList.querySelectorAll('.file-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        this.fileList.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        this.currentFile = item.dataset.file;
+                        this.loadLogFile(item.dataset.file);
                     });
-                    
-                    this.fileListElement.appendChild(fileItem);
                 });
             },
 
-            // 过滤文件列表
             filterFiles() {
-                const searchTerm = this.fileSearch.value.toLowerCase();
-                const filteredFiles = this.fileArray.filter(file => {
-                    const fileName = file.split('/').pop().toLowerCase();
-                    return fileName.includes(searchTerm);
-                });
-                this.renderFileList(filteredFiles);
+                const term = this.fileSearch.value.toLowerCase();
+                const filtered = this.fileArray.filter(f => f.split('/').pop().toLowerCase().includes(term));
+                this.renderFileList(filtered);
             },
-            
-            // 加载日志文件内容
+
             loadLogFile(file) {
                 if (!file) return;
-                
                 this.currentFile = file;
-                
-                // 更新UI
-                const fileItems = this.fileListElement.querySelectorAll('.file-item'); // 修改为正确的DOM元素引用
-                fileItems.forEach(item => {
-                    if (item.dataset.file === file) {
-                        item.classList.add('active');
-                    } else {
-                        item.classList.remove('active');
-                    }
-                });
-                
-                // 显示加载状态
                 this.showLoading(true);
-                
-                // 创建XMLHttpRequest对象
-                const xhr = new XMLHttpRequest();
-                
-                // 使用代理脚本加载日志文件内容
-                xhr.open('GET', 'get_log_content.php?file=' + encodeURIComponent(file), true);
-                xhr.responseType = 'text'; // 确保以文本形式获取响应
-                
-                xhr.onreadystatechange = () => {
-                    if (xhr.readyState === 4) {
-                        let content = '';
-                        
-                        if (xhr.status === 200) {
-                            // 请求成功，使用实际的文件内容
-                            content = xhr.responseText;
-                            console.log(`成功加载文件: ${file}`);
-                        } else {
-                            // 请求失败，显示错误信息
-                            console.error(`加载文件失败: ${file}, 状态码: ${xhr.status}`);
-                            content = `[错误] 无法加载文件: ${file}\nHTTP状态码: ${xhr.status}`;
-                        }
-                        
-                        // 渲染日志内容
-                        this.renderLogContent(content);
-                        
-                        // 隐藏加载状态
+
+                fetch(`get_log_content.php?file=${encodeURIComponent(file)}`)
+                    .then(res => res.text())
+                    .then(content => {
                         this.showLoading(false);
-                    }
-                };
-                
-                // 处理网络错误
-                xhr.onerror = () => {
-                    this.logContent.innerHTML = `[错误] 网络错误，无法加载文件: ${file}`;
-                    this.showLoading(false);
-                };
-                
-                xhr.send();
+                        this.renderLogContent(content);
+                    })
+                    .catch(err => {
+                        console.error('Error loading file:', err);
+                        this.showLoading(false);
+                        this.logContent.innerHTML = `<div class="empty-state"><p>加载文件失败</p></div>`;
+                    });
             },
-            
-            // 渲染日志内容
+
             renderLogContent(content) {
-                this.logContent.innerHTML = '';
-                
-                if (!content || content.trim() === '') {
-                    const emptyMessage = document.createElement('p');
-                    emptyMessage.className = 'text-center text-muted';
-                    emptyMessage.textContent = '日志文件为空';
-                    this.logContent.appendChild(emptyMessage);
+                if (!content?.trim()) {
+                    this.logContent.innerHTML = '<div class="empty-state"><p>日志文件为空</p></div>';
                     return;
                 }
-                
-                // 按行分割日志内容
-                const lines = content.split('\n');
-                
-                lines.forEach(line => {
-                    if (line.trim() === '') return;
+
+                const lines = content.split('\n').filter(l => l.trim());
+                this.logContent.innerHTML = lines.map(line => {
+                    const match = line.match(/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\] \[(\w+)\s*\] \[用户:(\w+)\] \[IP:(\S+)\] \[操作:(\S+)\] (.*)/);
                     
-                    const logEntry = document.createElement('div');
-                    logEntry.className = 'log-entry';
-                    
-                    // 解析日志行，提取日志级别
-                    let formattedLine = line;
-                    
-                    // 处理不同格式的日志条目
-                    // 匹配标准日志格式 [日期 时间] [级别] [用户:xxx] [IP:xxx] [操作:xxx] 内容
-                    const standardMatch = line.match(/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\] \[(\w+)\s*\] \[用户:(\w+)\] \[IP:(\S+)\] \[操作:(\S+)\] (.*)/);
-                    
-                    if (standardMatch) {
-                        const [, timestamp, level, user, ip, action, message] = standardMatch;
-                        
-                        // 格式化日志级别
-                        const levelClass = level.toLowerCase().replace(/\s+/g, '');
-                        const validLevels = ['info', 'success', 'error', 'warning'];
-                        const displayLevel = validLevels.includes(levelClass) ? levelClass : 'info';
-                        
-                        // 创建格式化的日志条目
-                        logEntry.innerHTML = `
-                            <span class="log-time">${timestamp}</span> 
-                            <span class="log-level ${displayLevel}">${level}</span> 
-                            <span class="log-user">[用户:${user}]</span> 
-                            <span class="log-ip">[IP:${ip}]</span> 
-                            <span class="log-action">[操作:${action}]</span> 
+                    if (match) {
+                        const [, time, level, user, ip, action, message] = match;
+                        const levelClass = ['info', 'success', 'error', 'warning'].includes(level.toLowerCase()) ? level.toLowerCase() : 'info';
+                        return `<div class="log-entry">
+                            <span class="log-time">${time}</span>
+                            <span class="log-level ${levelClass}">${level}</span>
+                            <span class="log-user">[${user}]</span>
+                            <span class="log-ip">[${ip}]</span>
+                            <span class="log-action">[${action}]</span>
                             <span class="log-message">${message}</span>
-                        `;
-                    } else {
-                        // 对于非标准格式的日志行，直接显示
-                        logEntry.textContent = line;
+                        </div>`;
                     }
-                    
-                    this.logContent.appendChild(logEntry);
-                });
+                    return `<div class="log-entry">${this.escapeHtml(line)}</div>`;
+                }).join('');
             },
-            
-            // 搜索日志内容
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            },
+
             searchLogContent() {
-                const searchTerm = this.logSearch.value.toLowerCase();
-                if (!searchTerm) {
-                    // 清除所有高亮
-                    this.clearHighlights();
+                const term = this.logSearch.value.toLowerCase();
+                if (!term) {
+                    this.clearSearch();
                     return;
                 }
-                
-                const logEntries = this.logContent.querySelectorAll('.log-entry');
-                let found = false;
+
+                const entries = this.logContent.querySelectorAll('.log-entry');
                 let firstMatch = null;
-                
-                // 清除所有高亮
-                this.clearHighlights();
-                
-                logEntries.forEach(entry => {
+
+                entries.forEach(entry => {
                     const text = entry.textContent.toLowerCase();
-                    if (text.includes(searchTerm)) {
-                        found = true;
-                        // 高亮搜索结果
-                        const highlightedText = entry.innerHTML.replace(
-                            new RegExp(`(${searchTerm})`, 'gi'),
+                    if (text.includes(term)) {
+                        entry.innerHTML = entry.innerHTML.replace(
+                            new RegExp(`(${term})`, 'gi'),
                             '<span class="highlight">$1</span>'
                         );
-                        entry.innerHTML = highlightedText;
-                        
-                        // 记录第一个匹配项，但不立即滚动
-                        if (!firstMatch) {
-                            firstMatch = entry;
-                            entry.classList.add('highlight');
-                        }
+                        if (!firstMatch) firstMatch = entry;
                     }
                 });
-                
-                // 添加一个滚动到结果的按钮
-                if (found && firstMatch) {
-                    // 检查是否已存在滚动按钮
-                    let scrollButton = document.getElementById('scrollToResultButton');
-                    if (!scrollButton) {
-                        scrollButton = document.createElement('button');
-                        scrollButton.id = 'scrollToResultButton';
-                        scrollButton.className = 'btn btn-info mt-2';
-                        scrollButton.innerHTML = '<i class="fas fa-arrow-down"></i> 滚动到结果';
-                        scrollButton.style.position = 'fixed';
-                        scrollButton.style.right = '20px';
-                        scrollButton.style.bottom = '20px';
-                        scrollButton.style.zIndex = '1000';
-                        document.body.appendChild(scrollButton);
-                    } else {
-                        scrollButton.style.display = 'block';
-                    }
-                    
-                    scrollButton.onclick = () => {
-                        firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    };
-                } else {
-                    // 如果没有找到结果，隐藏滚动按钮
-                    const scrollButton = document.getElementById('scrollToResultButton');
-                    if (scrollButton) {
-                        scrollButton.style.display = 'none';
-                    }
-                }
-                
-                if (!found) {
-                    // 显示未找到结果的提示
-                    const noResult = document.createElement('div');
-                    noResult.className = 'text-center text-muted mt-3';
-                    noResult.textContent = '未找到匹配的内容';
-                    this.logContent.appendChild(noResult);
+
+                if (firstMatch) {
+                    firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             },
-            
-            // 清除高亮
-            clearHighlights() {
-                const logEntries = this.logContent.querySelectorAll('.log-entry');
-                logEntries.forEach(entry => {
-                    entry.classList.remove('highlight');
-                    entry.innerHTML = entry.innerHTML.replace(/<span class="highlight">([^<]*)<\/span>/g, '$1');
-                });
-                
-                // 隐藏滚动按钮
-                const scrollButton = document.getElementById('scrollToResultButton');
-                if (scrollButton) {
-                    scrollButton.style.display = 'none';
-                }
-            },
-            
-            // 清除搜索
+
             clearSearch() {
                 this.logSearch.value = '';
-                // 使用清除高亮方法
-                this.clearHighlights();
-            },
-            
-            // 切换深色/浅色主题
-            toggleTheme() {
-                document.body.classList.toggle('dark-theme');
-                const isDarkMode = document.body.classList.contains('dark-theme');
-                
-                // 更新图标
-                this.themeToggle.innerHTML = isDarkMode ? 
-                    '<i class="fas fa-sun"></i>' : 
-                    '<i class="fas fa-moon"></i>';
-                
-                // 保存主题设置到本地存储
-                localStorage.setItem('darkTheme', isDarkMode);
-            },
-            
-            // 加载保存的主题
-            loadSavedTheme() {
-                const savedTheme = localStorage.getItem('darkTheme');
-                if (savedTheme === 'true') {
-                    document.body.classList.add('dark-theme');
-                    this.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                if (this.currentFile) {
+                    this.loadLogFile(this.currentFile);
                 }
             },
-            
-            // 返回主页
-            goBackToHome() {
-                window.location.href = 'index.html';
-            },
-            
-            // 显示/隐藏加载状态
+
             showLoading(show) {
                 this.loadingOverlay.style.display = show ? 'flex' : 'none';
+            },
+
+            toggleTheme() {
+                document.body.classList.toggle('dark-theme');
+                const isDark = document.body.classList.contains('dark-theme');
+                this.themeToggle.querySelector('.icon-moon').style.display = isDark ? 'none' : 'block';
+                this.themeToggle.querySelector('.icon-sun').style.display = isDark ? 'block' : 'none';
+                localStorage.setItem('darkTheme', isDark);
+            },
+
+            loadSavedTheme() {
+                if (localStorage.getItem('darkTheme') === 'true') {
+                    document.body.classList.add('dark-theme');
+                    this.themeToggle.querySelector('.icon-moon').style.display = 'none';
+                    this.themeToggle.querySelector('.icon-sun').style.display = 'block';
+                }
             }
         };
 
-        // 初始化应用
-        document.addEventListener('DOMContentLoaded', () => {
-            LogViewer.init();
-        });
+        document.addEventListener('DOMContentLoaded', () => LogViewer.init());
     </script>
 </body>
 </html>
